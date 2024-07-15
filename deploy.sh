@@ -22,6 +22,6 @@ git commit -m 'deploy'
 
 # if you are deploying to https://<USERNAME>.github.io/<REPO>
 # git push -f git@github.com:<USERNAME>/<REPO>.git main:gh-pages
-git push -f https://github.com/ecanquiz/how-to-code-in-javascript.git master:gh-pages
+git push -f https://github.com/ecanquiz/laravel-up-running.git master:gh-pages
 
 cd -
