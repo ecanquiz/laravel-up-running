@@ -18,7 +18,8 @@ export default defineConfig({
       sidebarDepth: 1,    // optional, defaults to 1
       items: [
         { text: '¿Por qué Laravel?', link: '/why-laravel' },
-        { text: 'Entorno de Desarrollo', link: 'set-up-laravel-dev-env' },
+        { text: 'Entorno de Desarrollo', link: '/set-up-laravel-dev-env' },
+        { text: 'Estructura de Directorios de Laravel', link: '/laravel-s-directory-structure' },
       ]
     }],
     socialLinks: [
