@@ -20,6 +20,9 @@ export default defineConfig({
         { text: '¿Por qué Laravel?', link: '/why-laravel' },
         { text: 'Entorno de Desarrollo', link: '/set-up-laravel-dev-env' },
         { text: 'Estructura de Directorios de Laravel', link: '/laravel-s-directory-structure' },
+        { text: 'Configuración', link: '/configuration' },
+        { text: 'Artisan y Tinker', link: '/artisan-and-tinker' },
+
       ]
     }],
     socialLinks: [
