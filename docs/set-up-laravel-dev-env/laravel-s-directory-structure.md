@@ -91,7 +91,7 @@ Archivos de configuración de Git.
 
 ### `artisan`
 
-Permite ejecutar comandos [Artisan](./artisan-and-tinker.html) desde la línea de comandos.
+Permite ejecutar comandos [Artisan](../artisan-and-tinker/index.html) desde la línea de comandos.
 
 ### `composer.json` y `composer.lock`
 
@@ -112,7 +112,3 @@ Un archivo Markdown que ofrece una introducción básica a Laravel. No verá est
 ### `vite.config.js`
 
 El archivo de configuración (opcional) para Vite. Este archivo le indica a su sistema de compilación cómo compilar y procesar sus activos de frontend.
-
-
-
-
