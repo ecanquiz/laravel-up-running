@@ -22,6 +22,8 @@ export default defineConfig({
         { text: 'Estructura de Directorios de Laravel', link: '/laravel-s-directory-structure' },
         { text: 'Configuración', link: '/configuration' },
         { text: 'Artisan y Tinker', link: '/artisan-and-tinker' },
+        { text: 'Pruebas', link: '/testing' },
+
 
       ]
     }],
