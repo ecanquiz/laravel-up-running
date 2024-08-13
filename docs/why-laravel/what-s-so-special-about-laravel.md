@@ -1,0 +1,38 @@
+# ¿Qué tiene de especial Laravel?
+
+Entonces, ¿qué es lo que distingue a Laravel? ¿Por qué vale la pena tener más de un framework PHP a la vez? Todos usan componentes de Symfony de todos modos, ¿verdad? Hablemos un poco sobre lo que hace que Laravel "funcione".
+
+
+## La filosofía de Laravel
+
+Sólo necesita leer los materiales de marketing y los archivos README de Laravel para comenzar a ver sus valores. Taylor usa palabras relacionadas con la luz como "Illuminate" y "Spark". Y luego están estos: “Artisans”. "Elegant." Además, estos: Breath of fresh air”. "Fresh start." Y finalmente: "Rapid". "Warp speed."
+
+Los dos valores más comunicados del framework son aumentar la velocidad y la felicidad de los desarrolladores. Taylor ha descrito el lenguaje "Artisan" como un contraste intencional con valores más utilitarios. Puede ver la génesis de este tipo de pensamiento en [su pregunta de 2011 sobre StackExchange](https://softwareengineering.stackexchange.com/questions/90954/is-there-any-benefit-to-obsession-with-making-code-look-pretty) en la que afirmó: "A veces paso cantidades ridículas de tiempo (horas) angustiándose por hacer que el código 'se vea bonito'" solo por una mejor experiencia de mirando el código en sí. Y a menudo ha hablado del valor de hacer que sea más fácil y rápido para los desarrolladores hacer realidad sus ideas, eliminando barreras innecesarias para crear excelentes productos.
+
+Laravel se trata, en esencia, de equipar y capacitar a los desarrolladores. Su objetivo es proporcionar código y características claras, simples y hermosas que ayuden a los desarrolladores a aprender, iniciar, desarrollar y escribir código que sea simple, claro y duradero rápidamente.
+
+El concepto de dirigirse a desarrolladores es claro en todos los materiales de Laravel. "Los desarrolladores felices crean el mejor código" está escrito en la documentación. "La felicidad del desarrollador desde la descarga hasta la implementación" fue el eslogan no oficial durante un tiempo. Por supuesto, cualquier herramienta o framework dirá que quiere que los desarrolladores estén contentos. Pero tener la felicidad de los desarrolladores como una preocupación principal, en lugar de secundaria, ha tenido un gran impacto en el estilo de Laravel y en el progreso en la toma de decisiones. Mientras que otros frameworks pueden tener como objetivo principal la pureza arquitectónica o la compatibilidad con los objetivos y valores de los equipos de desarrollo empresarial, el enfoque principal de Laravel es servir al desarrollador individual. Eso no significa que no pueda escribir aplicaciones arquitectónicamente puras o listas para la empresa en Laravel, pero no tendrá que ser a expensas de la legibilidad y comprensibilidad de su código base.
+
+## Cómo Laravel logra la felicidad de los desarrolladores
+
+Simplemente decir que quieres hacer felices a los desarrolladores es una cosa. Hacerlo es otra, y requiere que usted se pregunte qué es lo que en un framework de trabajo es más probable que haga infelices a los desarrolladores y qué es lo que más probablemente los haga felices. Hay varias formas en que Laravel intenta hacer la vida de los desarrolladores más fácil.
+
+Primero, Laravel es un framework de desarrollo rápido de aplicaciones. Esto significa que se centra en una curva de aprendizaje superficial (fácil) y en minimizar los pasos entre iniciar una nueva aplicación y publicarla. Todas las tareas más comunes en la creación de aplicaciones web, desde interacciones con bases de datos hasta autenticación, colas, correo electrónico y almacenamiento en caché, se simplifican gracias a los componentes que proporciona Laravel. Pero los componentes de Laravel no sólo son geniales por sí solos; Proporcionan una API consistente y estructuras predecibles en todo el framework. Eso significa que, cuando pruebes algo nuevo en Laravel, lo más probable es que termines diciendo: "...y simplemente funciona".
+
+Esto tampoco termina con el framework en sí. Laravel proporciona un ecosistema completo de herramientas para crear y ejecutar aplicaciones. Tiene Sail, Valet y Homestead para desarrollo local, Forge para administración de servidores y Envoyer y Vapor para implementación avanzada. Y hay un conjunto de paquetes complementarios: Cajero para pagos y suscripciones, Echo para WebSockets, Scout para búsqueda, Sanctum y Passport para autenticación de API, Dusk para pruebas de interfaz, Socialite para inicio de sesión social, Horizon para monitorear colas, Nova para construir paneles de administración y Spark para iniciar su SaaS. Laravel está tratando de eliminar el trabajo repetitivo de los trabajos de los desarrolladores para que puedan hacer algo único.
+
+A continuación, Laravel se centra en la “convención sobre la configuración”, lo que significa que si está dispuesto a utilizar los valores predeterminados de Laravel, tendrá que trabajar mucho menos que con otros frameworks que requieren que declare todas sus configuraciones, incluso si no utilizando la configuración recomendada. Los proyectos creados en Laravel toman menos tiempo que los creados en la mayoría de los otros frameworks PHP.
+
+Laravel también se centra profundamente en la simplicidad. Es posible utilizar la inyección de dependencia y la burla y el patrón y repositorios de Data Mapper y la segregación de responsabilidad de consultas de comandos y todo tipo de otros patrones arquitectónicos más complejos con Laravel, si lo desea. Pero mientras otros frameworks podrían sugerir el uso de esas herramientas y estructuras en cada proyecto, Laravel y su documentación y comunidad se inclinan por comenzar con la implementación más simple posible: una función global aquí, una fachada allá, ActiveRecord allá. Esto permite a los desarrolladores crear la aplicación más simple posible para satisfacer sus necesidades, sin limitar su utilidad en entornos complejos.
+
+Una fuente interesante de en qué se diferencia Laravel de otros frameworks PHP es que su creador y su comunidad están más conectados e inspirados en Ruby y Rails y los lenguajes de programación funcionales que en Java. Hay una fuerte corriente en PHP moderno que se inclina hacia la verbosidad y la complejidad, adoptando los aspectos más Java de PHP. Pero Laravel tiende a estar del otro lado, adoptando prácticas de codificación y características del lenguaje expresivas, dinámicas y simples.
+
+## La comunidad Laravel
+
+Si este libro es su primer contacto con la comunidad de Laravel, tiene algo especial que esperar. Uno de los elementos distintivos de Laravel, que ha contribuido a su crecimiento y éxito, es la acogedora comunidad docente que lo rodea. Desde los [videotutoriales de Laracasts](https://laracasts.com) de Jeffrey Way hasta [Laravel News](https://laravel-news.com), Slack, IRC y los canales de Discord, desde amigos de Twitter hasta blogueros, podcasts y conferencias de Laracon, Laravel tiene una comunidad rica y vibrante llena de gente que ha estado presente desde el primer día y gente que recién están comenzando su propio “día uno”. Y esto no es un accidente:
+
+>Desde el principio de Laravel, tuve la idea de que todas las personas quieren sentirse parte de algo. Es un instinto humano natural querer pertenecer y ser aceptado en un grupo de personas con ideas afines. Entonces, al inyectar personalidad en un framework web y ser realmente activo con la comunidad, ese tipo de sentimiento puede crecer en la comunidad.
+
+>—Taylor Otwell, entrevista sobre producto y soporte
+
+Taylor entendió desde los primeros días de Laravel que un proyecto de código abierto exitoso necesitaba dos cosas: buena documentación y una comunidad acogedora. Y esas dos cosas son ahora características distintivas de Laravel.

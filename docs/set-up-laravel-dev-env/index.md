@@ -1,0 +1,3 @@
+# Configurar Entorno de Desarrollo
+
+Parte del éxito de PHP se debe a que es difícil encontrar un servidor web que no pueda servir PHP. Sin embargo, las herramientas PHP modernas tienen requisitos más estrictos que las del pasado. La mejor manera de desarrollar para Laravel es garantizar un entorno de servidor local y remoto consistente para su código y, afortunadamente, el ecosistema de Laravel tiene algunas herramientas para esto.
