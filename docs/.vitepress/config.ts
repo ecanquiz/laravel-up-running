@@ -32,15 +32,22 @@ export default defineConfig({
       collapsed: true,
       items: [
         { text: 'Requisitos del Sistema', link: '/set-up-laravel-dev-env/system-requirements' },
-        { text: 'Composer', link: '/set-up-laravel-dev-env/composer' },
         { text: 'Entornos de Desarrollo Local', link: '/set-up-laravel-dev-env/local-development-environments' },        
-        { text: 'Creando un Nuevo Proyecto Laravel', link: '/set-up-laravel-dev-env/creating-a-new-laravel-project' },        
-        { text: 'Estructura de Directorios de Laravel', link: '/set-up-laravel-dev-env/laravel-s-directory-structure' },        
+        { text: 'Creando un Nuevo Proyecto', link: '/set-up-laravel-dev-env/creating-a-new-laravel-project' },        
+        { text: 'Estructura de Directorios', link: '/set-up-laravel-dev-env/laravel-s-directory-structure' },        
         { text: 'Configuración', link: '/set-up-laravel-dev-env/configuration' },
-        { text: 'En Marcha', link: '/set-up-laravel-dev-env/up-and-running' },
-        { text: 'Pruebas', link: '/set-up-laravel-dev-env/testing' },
-        { text: 'Resumen', link: '/set-up-laravel-dev-env/summary' }
+        { text: 'En Marcha y Pruebas', link: '/set-up-laravel-dev-env/up-running-and-testing' } 
       ]}, {
+        text: 'Enrutamiento y Controladores',   // required
+        path: '/routing-and-controllers/',
+        collapsible: true,
+        collapsed: true,
+        items: [
+          { text: 'MVC, Verbos HTTP y REST', link: '/routing-and-controllers/a-quick-Intro-to-mvc-the-http-verbs-and-rest' },
+          { text: 'Definiciones de Ruta', link: '/routing-and-controllers/route-definitions' },
+          { text: 'Controladores', link: '/routing-and-controllers/controllers' },
+        ]
+    }, {
         text: 'Artisan y Tinker',   // required
         path: '/artisan-and-tinker/',
         collapsible: true,
@@ -56,7 +63,17 @@ export default defineConfig({
       collapsed: true,
       items: [
         { text: 'Pruebas', link: '/testing/index' }
-      ]}],
+      ]
+    } ,{      
+        text: 'Escribir APIs',   // required
+        path: '/',      // optional, link of the title, which should be an absolute path and must exist
+        sidebarDepth: 1,    // optional, defaults to 1
+        collapsible: true,
+        collapsed: true,
+        items: [
+          { text: 'Fundamentos de APIs JSON Tipo REST', link: '/writing-apis/the-basics-of-rest-like-json-apis' }
+        ]}
+    ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ecanquiz/laravel-up-running' }
     ]
