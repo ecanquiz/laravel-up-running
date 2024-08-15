@@ -45,6 +45,7 @@ export default defineConfig({
         items: [
           { text: 'MVC, Verbos HTTP y REST', link: '/routing-and-controllers/a-quick-Intro-to-mvc-the-http-verbs-and-rest' },
           { text: 'Definiciones de Ruta', link: '/routing-and-controllers/route-definitions' },
+          { text: 'Grupos de Ruta', link: '/routing-and-controllers/route-groups' },        
           { text: 'Controladores', link: '/routing-and-controllers/controllers' },
         ]
     }, {
@@ -55,7 +56,16 @@ export default defineConfig({
         items: [
           { text: 'Artisan y Tinker', link: '/artisan-and-tinker/index' },
         ]
-    },{      
+    }, {      
+      text: 'El Contenedor',   // required
+      path: '/',      // optional, link of the title, which should be an absolute path and must exist
+      sidebarDepth: 1,    // optional, defaults to 1
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Breve Intro a Inyección de Dependencia', link: '/the-container/a-quick-intro-to-dependency-injection' }
+      ]
+    }, {      
       text: 'Pruebas',   // required
       path: '/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
@@ -64,7 +74,7 @@ export default defineConfig({
       items: [
         { text: 'Pruebas', link: '/testing/index' }
       ]
-    } ,{      
+    }, {      
         text: 'Escribir APIs',   // required
         path: '/',      // optional, link of the title, which should be an absolute path and must exist
         sidebarDepth: 1,    // optional, defaults to 1
