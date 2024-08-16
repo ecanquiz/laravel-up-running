@@ -49,6 +49,14 @@ export default defineConfig({
           { text: 'Controladores', link: '/routing-and-controllers/controllers' },
         ]
     }, {
+      text: 'Bases de Datos y Eloquent',   // required
+      path: '/databases-and-eloquent/',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Configuración', link: '/databases-and-eloquent/configuration' },
+      ]
+  }, {
         text: 'Artisan y Tinker',   // required
         path: '/artisan-and-tinker/',
         collapsible: true,
@@ -57,8 +65,17 @@ export default defineConfig({
           { text: 'Artisan y Tinker', link: '/artisan-and-tinker/index' },
         ]
     }, {      
+      text: 'Solicitudes, Respuestas y Middleware',   // required
+      path: '/requests-responses-and-middleware/',      // optional, link of the title, which should be an absolute path and must exist
+      sidebarDepth: 1,    // optional, defaults to 1
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Ciclo de Vida de Solicitud en Laravel', link: '/requests-responses-and-middleware/laravel-s-request-lifecycle' }
+      ]
+    }, {      
       text: 'El Contenedor',   // required
-      path: '/',      // optional, link of the title, which should be an absolute path and must exist
+      path: '/the-container/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
       collapsed: true,
@@ -67,7 +84,7 @@ export default defineConfig({
       ]
     }, {      
       text: 'Pruebas',   // required
-      path: '/',      // optional, link of the title, which should be an absolute path and must exist
+      path: '/testing/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
       collapsed: true,
