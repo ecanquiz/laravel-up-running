@@ -67,4 +67,94 @@ Tenga en cuenta que si realiza muchas personalizaciones `only()` y `except()`, e
 >
 >El generador de consultas es la herramienta que permite realizar llamadas como `Post::where('active', true)->get()` o incluso `DB::table('users')->all()`. Estás construyendo una consulta encadenando métodos uno tras otro.
 
-## Path Prefixes
+## Prefijos de Ruta
+
+Si tiene un grupo de rutas que comparten un segmento de su ruta — por ejemplo, si el panel de control de su sitio tiene el prefijo `/dashboard` — puede usar grupos de rutas para simplificar esta estructura (consulte el el siguiente ejemplo).
+
+_Prefijando un grupo de rutas_
+```php
+Route::prefix('dashboard')->group(function () {
+    Route::get('/', function () {
+        // Handles the path /dashboard
+    });
+    Route::get('users', function () {
+        // Handles the path /dashboard/users
+    });
+});
+```
+
+Tenga en cuenta que cada grupo con prefijo también tiene una ruta `/` que representa la raíz del prefijo (en el Ejemplo anterior es `/dashboard`).
+
+## Enrutamiento de Subdominios
+
+El enrutamiento de subdominios es lo mismo que la prefijación de rutas, pero su alcance es el subdominio en lugar del prefijo de ruta. Esto tiene dos usos principales. En primer lugar, es posible que desee presentar diferentes secciones de la aplicación (o aplicaciones completamente diferentes) a diferentes subdominios. El siguiente ejemplo muestra cómo puede lograrlo.
+
+_Enrutamiento de subdominio_
+```php
+Route::domain('api.myapp.com')->group(function () {
+    Route::get('/', function () {
+        //
+    });
+})
+```
+
+En segundo lugar, es posible que desees establecer parte del subdominio como parámetro, como se ilustra en el ejemplo siguiente. Esto se hace con mayor frecuencia en casos de multiusuario (piensa en_ Slack_ o _Harvest_, donde cada empresa obtiene su propio subdominio, como `tight.slack.co`).
+
+_Enrutamiento de subdominio parametrizado_
+```php
+Route::domain('{account}.myapp.com')->group(function () {
+    Route::get('/', function ($account) {
+        //
+    });
+    Route::get('users/{id}', function ($account, $id) {
+        //
+    });
+});
+```
+
+Tenga en cuenta que todos los parámetros del grupo se pasan a los métodos de las rutas agrupadas como el primer parámetro(s).
+
+## Prefijos de Nombres
+
+Es común que los nombres de las rutas reflejen la cadena de herencia de los elementos de la ruta, por lo que `users/comments/5` será atendido por una ruta llamada `users.comments.show`. En este caso, es común utilizar un grupo de rutas alrededor de todas las rutas que se encuentran debajo del recurso `users.comments`.
+
+
+Al igual que podemos anteponer segmentos de URL, también podemos anteponer cadenas al nombre de la ruta. Con los prefijos de nombre de grupo de rutas, podemos definir que cada ruta dentro de este grupo debe tener una cadena dada antepuesta a su nombre. En este contexto, anteponemos `users.` a cada nombre de ruta y luego `comments.` (ver ejemplo siguiente).
+
+_Prefijos de nombres de grupos de rutas_
+```php
+Route::name('users.')->prefix('users')->group(function () {
+    Route::name('comments.')->prefix('comments')->group(function () {
+    Route::get('{id}', function () {
+        // ...
+    })->name('show'); // Route named 'users.comments.show'
+
+    Route::destroy('{id}', function () {})->name('destroy');
+    });
+});
+```
+
+## Controladores de Grupos de Rutas
+
+Cuando se agrupan rutas que son atendidas por el mismo controlador, como cuando mostramos, editamos y eliminamos usuarios, por ejemplo, podemos usar el método `controller()` del grupo de rutas, como se muestra en el ejemplo siguiente, para evitar tener que definir la tupla completa para cada ruta.
+
+_Controladores de grupos de rutas_
+```php
+use App\Http\Controllers\UserController;
+
+Route::controller(UserController::class)->group(function () {
+    Route::get('/', 'index');
+    Route::get('{id}', 'show');
+});
+```
+
+## Ruta de Respaldo
+
+En Laravel puedes definir una _“fallback route”_ (que debes definir al final de tu archivo de rutas) para capturar todas las solicitudes no coincidentes:
+
+```php
+Route::fallback(function () {
+    //
+});
+```
+
