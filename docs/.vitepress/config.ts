@@ -51,6 +51,14 @@ export default defineConfig({
           { text: 'Controladores', link: '/routing-and-controllers/controllers' },
         ]
     }, {
+      text: 'Plantillas Blade',   // required
+      path: '/blade-templating/',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Haciendo Eco de Los Datos', link: '/blade-templating/echoing-data' },
+        { text: 'Compositores de Vistas e Inyección de Servicios', link: '/blade-templating/view-composers-and-service-injection' }
+      ]}, {
       text: 'Bases de Datos y Eloquent',   // required
       path: '/databases-and-eloquent/',
       collapsible: true,
