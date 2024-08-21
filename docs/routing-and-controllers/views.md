@@ -22,9 +22,10 @@ Route::get('/', function () {
 
 Este código busca una vista en `resources/views/home.blade.php` o `resources/views/home.php` y carga su contenido y analiza cualquier estructura de control o PHP en línea hasta que solo tenga la salida de la vista. Una vez que la devuelva, se pasará al resto de la pila de respuestas y, finalmente, se devolverá al usuario.
 
+## _Pasando variables a las vistas_
+
 Pero ¿qué ocurre si necesitas pasar variables? Observa el ejemplo siguiente.
 
-_Pasando variables a las vistas_
 ```php
 Route::get('tasks', function () {
     return view('tasks.index')
