@@ -72,7 +72,7 @@ export default defineConfig({
         collapsible: true,
         collapsed: true,
         items: [
-          { text: 'Artisan y Tinker', link: '/artisan-and-tinker/index' },
+          { text: 'Artisan y Tinker', link: '/artisan-and-tinker/an-introduction-to-artisan' },
         ]
     }, {      
       text: 'Solicitudes, Respuestas y Middleware',   // required

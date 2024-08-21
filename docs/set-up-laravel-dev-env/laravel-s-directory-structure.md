@@ -91,7 +91,7 @@ Archivos de configuración de Git.
 
 ### `artisan`
 
-Permite ejecutar comandos [Artisan](../artisan-and-tinker/index.html) desde la línea de comandos.
+Permite ejecutar comandos [Artisan](../artisan-and-tinker/an-introduction-to-artisan.html) desde la línea de comandos.
 
 ### `composer.json` y `composer.lock`
 
