@@ -95,6 +95,63 @@ php artisan make:controller TaskController --resource
 ```
 :::
 
-## Getting User Input
+## Obtener la Entrada del Usuario
+
+La segunda acción más común que se realiza en un método de controlador es tomar la entrada del usuario y actuar en consecuencia. Esto introduce algunos conceptos nuevos, así que echemos un vistazo a un poco de código de muestra y analicemos las nuevas partes.
+
+Primero, vinculemos nuestra ruta; consulte el siguiente ejemplo.
+
+_Vinculación de acciones de formulario básicas_
+```php
+// routes/web.php
+Route::get('tasks/create', [TaskController::class, 'create']);
+Route::post('tasks', [TaskController::class, 'store']);
+```
+
+Tenga en cuenta que estamos vinculando la acción `GET` de `tasks/create` (que muestra un formulario para crear una nueva tarea) y la acción `POST` de `tasks` (que es donde nuestro formulario `POST` hará cuando estemos creando una nueva tarea). Podemos suponer que el método `create()` en nuestro controlador solo muestra un formulario, así que veamos el método `store()` en el siguiente ejemplo.
+
+_Método común de controlador de entrada de formulario_
+```php
+// TaskController.php
+...
+public function store()
+{
+    Task::create(request()->only(['title', 'description']));
+
+    return redirect('tasks');
+}
+```
+
+Este ejemplo utiliza modelos Eloquent y la funcionalidad `redirect()`, y hablaremos más sobre ellos más adelante, pero por ahora hablemos rápidamente sobre cómo obtenemos nuestros datos aquí.
+
+Estamos usando el asistente `request()` para representar la solicitud HTTP (más sobre esto más adelante) y usamos su método `only()` para extraer solo los campos `title` y `description` que envió el usuario.
+
+Luego, pasamos esos datos al método `create()` de nuestro modelo `Task`, que crea una nueva instancia de la tarea con `title` establecido en el título ingresado y `description` establecido en la descripción ingresada. Finalmente, redirigimos nuevamente a la página que muestra todas las tareas.
+
+Aquí hay algunas capas de abstracción en funcionamiento, que cubriremos en un segundo, pero debes saber que los datos que provienen del método `only()` provienen del mismo conjunto de datos del que extraen todos los métodos comunes utilizados en el objeto `Request`, incluidos `all()` y `get()`. El conjunto de datos del que extrae cada uno de estos métodos representa todos los datos proporcionados por el usuario, ya sean de parámetros de consulta o valores `POST`. Entonces, nuestro usuario completó dos campos en la página "agregar tarea": ​​"título" y "descripción".
+
+Para desglosar un poco la abstracción, `request()->only()` toma una matriz asociativa de nombres de entrada y los devuelve:
+
+```php
+request()->only(['title', 'description']);
+// returns:
+[
+    'title' => 'Whatever title the user typed on the previous page',
+    'description' => 'Whatever description the user typed on the previous page',
+]
+```
+
+Y `Task::create()` toma una matriz asociativa y crea una nueva tarea a partir de ella:
+
+```php
+Task::create([
+    'title' => 'Buy milk',
+    'description' => 'Remember to check the expiration date this time, Norbert!',
+]);
+```
+
+Al combinarlos, se crea una tarea con solo los campos “título” y “descripción” proporcionados por el usuario.
+
+## Injecting Dependencies into Controllers
 
 ## Controladores de Recursos
