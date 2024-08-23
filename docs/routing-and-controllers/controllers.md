@@ -152,6 +152,41 @@ Task::create([
 
 Al combinarlos, se crea una tarea con solo los campos “título” y “descripción” proporcionados por el usuario.
 
-## Injecting Dependencies into Controllers
+## Inyección de Dependencias en los Controladores
+
+Las fachadas y los ayudantes globales de Laravel presentan una interfaz sencilla para las clases más útiles en el código base de Laravel. Puede obtener información sobre la solicitud actual y la entrada del usuario, la sesión, los cachés y mucho más.
+
+Pero si prefiere inyectar sus dependencias, o si desea utilizar un servicio que no tiene una fachada o un ayudante, deberá encontrar alguna forma de incorporar instancias de estas clases a su controlador.
+
+Esta es nuestra primera exposición al contenedor de servicios de Laravel. Por ahora, si no le resulta familiar, puede pensar en él como un poco de magia de Laravel; o, si desea saber más sobre cómo funciona realmente, puede pasar directamente [aquí](../the-container/a-quick-intro-to-dependency-injection.html).
+
+Todos los métodos del controlador (incluidos los constructores) se resuelven fuera del contenedor de Laravel, lo que significa que cualquier cosa que escribas y que el contenedor sepa cómo resolver se inyectará automáticamente.
+
+:::info Typehints en PHP
+_Sugerencia de tipo_ en PHP significa poner el nombre de una clase o interfaz delante de una variable en la firma de un método:
+
+```php
+public function __construct(Logger $logger) {}
+```
+Este typehint le dice a PHP que todo lo que se pasa al método _debe_ ser del tipo `Logger`, que podría ser una interfaz o una clase.
+:::
+
+Como buen ejemplo, ¿qué sucede si prefiere tener una instancia del objeto `Request` en lugar de usar el asistente global? Simplemente escriba `Illuminate\Http\Request` en los parámetros de su método, como en el ejemplo siguiente.
+
+_Inyección de método de controlador mediante sugerencia de tipo_
+```php
+// TaskController.php
+...
+public function store(\Illuminate\Http\Request $request)
+{
+    Task::create($request->only(['title', 'description']));
+
+    return redirect('tasks');
+}
+```
+
+Entonces, has definido un parámetro que debe pasarse al método `store()`. Y como la has tipado, y como Laravel sabe cómo resolver ese nombre de clase, vas a tener el objeto `Request` listo para que lo uses en tu método sin trabajo de tu parte. Sin vinculación explícita, sin nada más — solo está ahí como la variable `$request`.
+
+Y, como se puede ver al comparar los ejemplos anteriores, el ayudante `request()` y el objeto `Request` se comportan exactamente de la misma manera.
 
 ## Controladores de Recursos
