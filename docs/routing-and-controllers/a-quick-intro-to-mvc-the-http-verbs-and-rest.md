@@ -22,7 +22,7 @@ En MVC, tienes tres conceptos principales:
 En la siguiente figura, puede ver que el usuario final interactuará primero con el controlador enviando una solicitud HTTP a través de su navegador. El controlador, en respuesta a esa solicitud, puede escribir datos en el modelo (base de datos) o extraer datos del mismo. Luego, es probable que el controlador envíe datos a una vista y, luego, la vista se devolverá al usuario final para que la muestre en su navegador.
 
 
-![a-quick-Intro-to-mvc-the-http-verbs-and-rest](../img/a-quick-Intro-to-mvc-the-http-verbs-and-rest-01.png)
+![a-quick-intro-to-mvc-the-http-verbs-and-rest](../img/a-quick-intro-to-mvc-the-http-verbs-and-rest-01.png)
 **Una ilustración básica de MVC**
 
 Cubriremos algunos casos de uso para Laravel que no se ajustan a esta forma relativamente simplista de ver la arquitectura de la aplicación, así que no te obsesiones con MVC, pero esto al menos te preparará para abordar el resto de este capítulo mientras hablamos sobre vistas y controladores.
