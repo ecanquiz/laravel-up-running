@@ -190,3 +190,37 @@ Entonces, has definido un parámetro que debe pasarse al método `store()`. Y co
 Y, como se puede ver al comparar los ejemplos anteriores, el ayudante `request()` y el objeto `Request` se comportan exactamente de la misma manera.
 
 ## Controladores de Recursos
+
+A veces, nombrar los métodos de los controladores puede ser la parte más difícil de escribir un controlador. Afortunadamente, Laravel tiene algunas convenciones para todas las rutas de un controlador REST/CRUD tradicional (llamado _controlador de recursos_ en Laravel); Además, viene con un generador listo para usar y una definición de ruta conveniente que le permite vincular un controlador de recursos completo a la vez.
+
+Para ver los métodos que Laravel espera para un controlador de recursos, generemos un nuevo controlador desde la línea de comandos:
+
+```sh
+php artisan make:controller MySampleResourceController --resource
+```
+
+Ahora abre `app/Http/Controllers/MySampleResourceController.php`. Verás que viene precargado con bastantes métodos. Veamos qué representa cada uno. Usaremos una `Task` como ejemplo.
+
+### Los métodos de los controladores de recursos de Laravel
+
+[¿Recuerdas la tabla anterior? Esta tabla muestra el verbo HTTP](../routing-and-controllers/a-quick-intro-to-mvc-the-http-verbs-and-rest.html#los-verbos-http), la URL, el nombre del método del controlador y el nombre de cada uno de estos métodos predeterminados que se generan en los controladores de recursos de Laravel.
+
+### Vincular un controlador de recursos
+
+Hemos visto que estos son los nombres de ruta convencionales que se usan en Laravel y también que es fácil generar un controlador de recursos con métodos para cada una de estas rutas predeterminadas. Afortunadamente, no tienes que generar rutas para cada uno de estos métodos de controlador a mano, si no lo deseas. Hay un truco para eso, llamado _vinculación de controlador de recursos_. Observa el ejemplo siguiente.
+
+_Vinculación del controlador de recursos_
+```php
+// routes/web.php
+Route::resource('tasks', TaskController::class);
+```
+
+Esto vinculará automáticamente todas las rutas enumeradas en la [tabla anterior](../routing-and-controllers/a-quick-intro-to-mvc-the-http-verbs-and-rest.html#los-verbos-http) para este recurso a los nombres de método apropiados en el controlador especificado. También nombrará estas rutas de manera apropiada; por ejemplo, el método `index()` en el controlador de recursos de tareas se llamará `tasks.index`.
+
+:::info `artisan route:list`
+Si alguna vez te encuentras en una situación en la que te preguntas qué rutas tiene disponibles tu aplicación actual, existe una herramienta para eso: desde la línea de comandos, ejecuta `php artisan route:list` y obtendrás una lista de todas las rutas disponibles. Prefiero `php artisan route:list --exclude-vendor` para no ver todas las rutas extrañas que mis dependencias registran para que funcionen (ver Figura siguiente).
+:::
+
+![controllers](../img/controllers-01.png)
+_`artisan route:list`_
+

@@ -2,7 +2,7 @@
 
 En algunos de las clausuras de ruta que hemos visto hasta ahora, hemos visto algo como `return view('account')`. ¿Qué está pasando aquí?
 
-En el [patrón MVC](./a-quick-Intro-to-mvc-the-http-verbs-and-rest.html#¿que-es-mvc), las vistas (o plantillas) son archivos que describen cómo debería verse una determinada salida. Es posible que tenga vistas que generen JSON, XML o correo electrónico, pero las vistas más comunes en un framework web generan HTML.
+En el [patrón MVC](./a-quick-intro-to-mvc-the-http-verbs-and-rest.html#¿que-es-mvc), las vistas (o plantillas) son archivos que describen cómo debería verse una determinada salida. Es posible que tenga vistas que generen JSON, XML o correo electrónico, pero las vistas más comunes en un framework web generan HTML.
 
 En Laravel, hay dos formatos de vista que puedes usar fuera de caja: PHP simple y plantillas [Blade](../blade-templating/echoing-data.html#plantillas-blade). La diferencia está en el nombre del archivo: `about.php` se procesará con el motor PHP, y `about.blade.php` se procesará con el motor Blade.
 

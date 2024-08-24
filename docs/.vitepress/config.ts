@@ -43,7 +43,7 @@ export default defineConfig({
         collapsible: true,
         collapsed: true,
         items: [
-          { text: 'MVC, Verbos HTTP y REST', link: '/routing-and-controllers/a-quick-Intro-to-mvc-the-http-verbs-and-rest' },
+          { text: 'MVC, Verbos HTTP y REST', link: '/routing-and-controllers/a-quick-intro-to-mvc-the-http-verbs-and-rest' },
           { text: 'Definiciones de Ruta', link: '/routing-and-controllers/route-definitions' },
           { text: 'Grupos de Ruta', link: '/routing-and-controllers/route-groups' },
           { text: 'Rutas Firmadas', link: '/routing-and-controllers/signed-routes' },
