@@ -224,3 +224,40 @@ Si alguna vez te encuentras en una situación en la que te preguntas qué rutas 
 ![controllers](../img/controllers-01.png)
 _`artisan route:list`_
 
+## Controladores de Recursos de API
+Cuando trabajas con API RESTful, la lista de posibles acciones en un recurso no es la misma que con un controlador de recursos HTML. Por ejemplo, puedes enviar una solicitud `POST` a una API para crear un recurso, pero no puedes realmente "mostrar un formulario de creación" en una API.
+
+Para generar un _controlador de recursos API_, que es un controlador que tiene la misma estructura que un controlador de recursos excepto que excluye las acciones de _creación_ y _edición_, pase la bandera `--api` al crear un controlador:
+
+```sh
+php artisan make:controller MySampleResourceController --api
+```
+
+Para vincular un controlador de recursos API, utilice el método `apiResource()` en lugar del método `resource()`, como se muestra en el ejemplo siguiente.
+
+_Vínculo del controlador de recursos API_
+```php
+// routes/web.php
+Route::apiResource('tasks', TaskController::class);
+```
+
+## Controladores de Acción Simple
+
+Habrá ocasiones en sus aplicaciones en las que un controlador solo deba dar servicio a una única ruta. Es posible que se pregunte cómo nombrar el método del controlador para esa ruta. Afortunadamente, puede apuntar una única ruta a un único controlador sin preocuparse por nombrar el método.
+
+Como ya sabrás, el método `__invoke()` es un método mágico de PHP que te permite “invocar” una instancia de una clase, tratándola como una función y llamándola.
+
+Esta es la herramienta que utilizan los controladores de acción única de Laravel para permitirle señalar una ruta a un solo controlador, como puede ver en el ejemplo siguiente.
+
+_Uso del método `__invoke()`_
+```php
+// \App\Http\Controllers\UpdateUserAvatar.php
+public function __invoke(User $user)
+{
+    // Update the user's avatar image
+}
+
+// routes/web.php
+Route::post('users/{user}/update-avatar', UpdateUserAvatar::class);
+```
+
