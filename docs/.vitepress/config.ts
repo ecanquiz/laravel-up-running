@@ -49,7 +49,11 @@ export default defineConfig({
           { text: 'Rutas Firmadas', link: '/routing-and-controllers/signed-routes' },
           { text: 'Vistas', link: '/routing-and-controllers/views' },
           { text: 'Controladores', link: '/routing-and-controllers/controllers' },
-          { text: 'Vincular Modelo de Ruta', link: '/routing-and-controllers/route-model-binding' },          
+          { text: 'Vincular Modelo de Ruta', link: '/routing-and-controllers/route-model-binding' },
+          { text: 'Caché de Rutas', link: '/routing-and-controllers/route-caching' },
+
+          
+          
         ]
     }, {
       text: 'Plantillas Blade',   // required
