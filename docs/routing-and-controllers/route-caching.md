@@ -1,1 +1,9 @@
 # Caché de Rutas
+
+Si buscas exprimir cada milisegundo de tu tiempo de carga, es posible que quieras echar un vistazo al _almacenamiento en caché de rutas_. Una de las partes del arranque de Laravel que puede tardar entre unas pocas docenas y unos pocos cientos de milisegundos es el análisis de los archivos _routes/*_, y el almacenamiento en caché de rutas acelera este proceso drásticamente.
+
+Para almacenar en caché el archivo de rutas, debe utilizar todas las rutas de controlador, redireccionamiento, vista y recurso (sin clausuras de ruta). Si su aplicación no utiliza ninguna clausura de ruta, puede ejecutar `php artisan route:cache` y Laravel serializará los resultados de sus archivos _routes/*_. Si desea eliminar el caché, ejecute `php artisan route:clear`.
+
+Aquí está el inconveniente: Laravel ahora comparará las rutas con ese archivo almacenado en caché en lugar de con los archivos de _rutas/*_ reales. Puedes realizar cambios ilimitados en tus archivos de rutas y no tendrán efecto hasta que ejecutes `route:cache` nuevamente. Esto significa que tendrás que volver a almacenar en caché cada vez que realices un cambio, lo que genera muchas posibilidades de confusión.
+
+Esto es lo que recomendaría en su lugar: dado que Git ignora el archivo de caché de ruta de todos modos de forma predeterminada, considere usar solo el almacenamiento en caché de ruta en su servidor de producción y ejecute el comando `php artisan route:cache` cada vez que implemente un código nuevo (ya sea a través de un gancho posterior a la implementación de Git, un comando de implementación de Forge o como parte de cualquier otro sistema de implementación que use). De esta manera, no tendrá problemas de desarrollo local confusos, pero su entorno remoto aún se beneficiará del almacenamiento en caché de ruta.

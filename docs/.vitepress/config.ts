@@ -51,9 +51,8 @@ export default defineConfig({
           { text: 'Controladores', link: '/routing-and-controllers/controllers' },
           { text: 'Vincular Modelo de Ruta', link: '/routing-and-controllers/route-model-binding' },
           { text: 'Caché de Rutas', link: '/routing-and-controllers/route-caching' },
-
-          
-          
+          { text: 'Suplantación de Métodos de Formulario', link: '/routing-and-controllers/form-method-spoofing' },
+          { text: 'Protección CSRF', link: '/routing-and-controllers/csrf-protection' },
         ]
     }, {
       text: 'Plantillas Blade',   // required
