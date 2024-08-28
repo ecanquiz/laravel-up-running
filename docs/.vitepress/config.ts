@@ -53,6 +53,7 @@ export default defineConfig({
           { text: 'Caché de Rutas', link: '/routing-and-controllers/route-caching' },
           { text: 'Suplantación de Métodos de Formulario', link: '/routing-and-controllers/form-method-spoofing' },
           { text: 'Protección CSRF', link: '/routing-and-controllers/csrf-protection' },
+          { text: 'Redirecciones', link: '/routing-and-controllers/redirects' },
         ]
     }, {
       text: 'Plantillas Blade',   // required
