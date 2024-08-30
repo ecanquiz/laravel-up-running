@@ -29,7 +29,7 @@ Tenga en cuenta que el ayudante `redirect()` expone los mismos métodos que la f
 
 Tenga en cuenta también que el tercer parámetro (opcional) para el ayudante de ruta `Route::redirect()` puede ser el código de estado (por ejemplo, '302') para su redirección.
 
-## redirect()->to()
+## `redirect()->to()`
 
 La firma del método `to()` para redirecciones se ve así:
 
@@ -50,7 +50,7 @@ Route::get('redirect', function () {
 });
 ```
 
-## redirect()->route()
+## `redirect()->route()`
 
 El método `route()` es el mismo que el método `to()`, pero en lugar de apuntar a una ruta en particular, apunta a un nombre de ruta en particular (ver ejemplo siguiente).
 
@@ -89,9 +89,44 @@ Route::get('redirect', function () {
 :::
 
 
-## redirect()->back()
+## `redirect()->back()`
 
 Debido a algunas de las ventajas integradas de la implementación de sesión de Laravel, su aplicación siempre sabrá cuál fue la página visitada anteriormente por el usuario. Eso abre la oportunidad de una redirección `redirect()->back()`, que simplemente redirige al usuario a la página de la que proviene. También hay un atajo global para esto: `back()`.
 
-## Other Redirect Methods
+## Otros Métodos de Redireccionamiento
+
+El servicio de redireccionamiento proporciona otros métodos que se utilizan con menos frecuencia, pero que aún están disponibles:
+
+- `refresh()`: Redirige a la misma página en la que se encuentra actualmente el usuario.
+
+- `away()`: 
+Permite redirigir a una URL externa sin la validación de URL predeterminada.
+
+- `secure()`: 
+Como `to()` con el parámetro seguro establecido en `"true"`.
+
+- `action()`: Le permite vincular a un controlador y método de una de dos maneras: como una cadena `(redirect()->action('MyController@myMethod'))` o como una tupla `(redirect()->action([MyController::class, 'myMethod']))`.
+
+- `guest()`: Utilizado internamente por el [sistema de autenticación](../user-authentication-and-authorization/the-user-model-and-migration.html); cuando un usuario visita una ruta para la que no está autenticado, esto captura la ruta _“intended”_ y luego redirecciona al usuario (generalmente a una página de inicio de sesión).
+
+- `intended()`: También lo utiliza internamente el sistema de autenticación; después de una autenticación exitosa, toma la URL _“intended”_ almacenada por el método `guest()` y redirecciona al usuario allí.
+
+## `redirect()->with()`
+
+Si bien está estructurado de manera similar a los otros métodos que puedes llamar en `redirect()`, `with()` es diferente en el sentido de que no define a dónde estás redireccionando, sino qué datos estás pasando junto con la redirección. Cuando estás redireccionando a los usuarios a diferentes páginas, a menudo quieres pasar ciertos datos junto con ellos. Podrías flashear manualmente los datos a la sesión, pero Laravel tiene algunos métodos convenientes para ayudarte con eso.
+
+Lo más común es que puedas pasar una matriz de claves y valores o una sola clave y valor usando `with()`, como en el ejemplo siguiente. Esto guarda los datos de `with()` en la sesión solo para la próxima carga de página.
+
+_Redirigir con datos_
+```php
+Route::get('redirect-with-key-value', function () {
+    return redirect('dashboard')
+        ->with('error', true);
+});
+
+Route::get('redirect-with-array', function () {
+    return redirect('dashboard')
+        ->with(['error' => true, 'message' => 'Whoops!']);
+});
+```
 

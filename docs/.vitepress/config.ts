@@ -71,13 +71,21 @@ export default defineConfig({
       items: [
         { text: 'Configuración', link: '/databases-and-eloquent/configuration' },
       ]
-  }, {
-        text: 'Artisan y Tinker',   // required
-        path: '/artisan-and-tinker/',
+    }, {
+      text: 'Artisan y Tinker',   // required
+      path: '/artisan-and-tinker/',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Artisan y Tinker', link: '/artisan-and-tinker/an-introduction-to-artisan' },
+      ]
+    }, {
+        text: 'Autenticación y Autorización de Usuarios',   // required
+        path: '/user-authentication-and-authorization/',
         collapsible: true,
         collapsed: true,
         items: [
-          { text: 'Artisan y Tinker', link: '/artisan-and-tinker/an-introduction-to-artisan' },
+          { text: 'El Modelo de Usuario y la Migración', link: '/user-authentication-and-authorization/the-user-model-and-migration' },
         ]
     }, {      
       text: 'Solicitudes, Respuestas y Middleware',   // required
