@@ -54,6 +54,8 @@ export default defineConfig({
           { text: 'Suplantación de Métodos de Formulario', link: '/routing-and-controllers/form-method-spoofing' },
           { text: 'Protección CSRF', link: '/routing-and-controllers/csrf-protection' },
           { text: 'Redirecciones', link: '/routing-and-controllers/redirects' },
+          { text: 'Abortando la Solicitud', link: '/routing-and-controllers/aborting-the-request' },
+
         ]
     }, {
       text: 'Plantillas Blade',   // required
@@ -70,6 +72,15 @@ export default defineConfig({
       collapsed: true,
       items: [
         { text: 'Configuración', link: '/databases-and-eloquent/configuration' },
+        { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },        
+      ]
+    }, {
+      text: 'Recopilación y Manejo de Datos de Usuario',   // required
+      path: '/collecting-and-handling-user-data/',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Validación', link: '/collecting-and-handling-user-data/validation' },
       ]
     }, {
       text: 'Artisan y Tinker',   // required

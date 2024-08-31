@@ -130,3 +130,51 @@ Route::get('redirect-with-array', function () {
 });
 ```
 
+:::info Encadenamiento de Métodos en Redirecciones
+Al igual que con muchas otras fachadas, la mayoría de las llamadas a la fachada `Redirect` pueden aceptar cadenas de métodos fluidos, como las llamadas `with()` del ejemplo anterior. Aprenderá más sobre fluidez en [“¿Qué Es una Interfaz Fluida?”](../databases-and-eloquent/query-builder.html#¿que-es-una-interfaz-fluida).
+:::
+
+También puede utilizar `withInput()`, como en el ejemplo siguiente, para redirigir con la entrada del formulario del usuario mostrada; esto es más común en el caso de un error de validación, donde desea enviar al usuario nuevamente al formulario del que acaba de venir.
+
+_Redirigir con entrada de formulario_
+```php
+Route::get('form', function () {
+    return view('form');
+});
+
+Route::post('form', function () {
+    return redirect('form')
+        ->withInput()
+        ->with(['error' => true, 'message' => 'Whoops!']);
+    });
+```
+
+La forma más sencilla de obtener la entrada flasheada que se pasó con `withInput()` es usando el asistente `old()`, que se puede usar para obtener toda la entrada anterior (`old()`) o solo el valor de una clave en particular, como se muestra en el siguiente ejemplo, con el segundo parámetro como predeterminado si no hay ningún valor anterior. Verá esto comúnmente en las vistas, lo que permite que este HTML se use tanto en la vista de _"create"_ como en la de _"edit"_ para este formulario:
+
+```html
+<input name="username" value="<?=
+old('username', 'Default username instructions here');
+?>">
+```
+
+Hablando de validación, también hay un método útil para pasar errores junto con una respuesta de redirección: `withErrors()`. Puedes pasarle cualquier “proveedor” de errores, que puede ser una cadena de errores, una matriz de errores o, lo más común, una instancia del `Validator` de Illuminate, que cubriremos [aquí](../requests-responses-and-middleware/laravel-s-request-lifecycle.html). El ejemplo siguiente muestra su uso.
+
+_Redirigir con errores_
+```php
+Route::post('form', function (Illuminate\Http\Request $request) {
+    $validator = Validator::make($request->all(), $this->validationRules);
+
+    if ($validator->fails()) {
+        return back()
+            ->withErrors($validator)
+            ->withInput();
+    }
+});
+```
+
+`withErrors()` comparte automáticamente una variable `$errors` con las vistas de la página a la que redirige, para que puedas manejarla como quieras.
+
+:::info El método `validate()` en las Solicitudes
+¿No le gusta el aspecto del ejemplo anterior? Existe una herramienta sencilla y potente que le permitirá limpiar ese código fácilmente. Lea más en [“`validate()` en el Objeto Request”](../collecting-and-handling-user-data/validation.html#validate-en-el-objeto-request).
+:::
+
