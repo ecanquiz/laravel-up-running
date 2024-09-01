@@ -55,7 +55,8 @@ export default defineConfig({
           { text: 'Protección CSRF', link: '/routing-and-controllers/csrf-protection' },
           { text: 'Redirecciones', link: '/routing-and-controllers/redirects' },
           { text: 'Abortando la Solicitud', link: '/routing-and-controllers/aborting-the-request' },
-
+          { text: 'Respuestas Personalizadas', link: '/routing-and-controllers/custom-responses' },
+          { text: 'Prueba y Resumen', link: '/routing-and-controllers/testing-and-summary' },         
         ]
     }, {
       text: 'Plantillas Blade',   // required
