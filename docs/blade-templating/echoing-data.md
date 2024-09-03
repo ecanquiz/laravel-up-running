@@ -50,6 +50,3 @@ Sin embargo, hay un aspecto diferente, y es posible que ya lo hayas adivinado: _
 >```
 >
 >También puedes envolver cualquier sección grande de contenido de _script_ con la [`directiva @verbatim`](https://laravel.com/docs/11.x/blade#the-at-verbatim-directive).
-
-
-## Control Structures

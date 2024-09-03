@@ -65,6 +65,8 @@ export default defineConfig({
       collapsed: true,
       items: [
         { text: 'Haciendo Eco de Los Datos', link: '/blade-templating/echoing-data' },
+        { text: 'Estructuras de Control', link: '/blade-templating/control-structures' },
+        { text: 'Herencia de Plantilla', link: '/blade-templating/template-inheritance' },       
         { text: 'Compositores de Vistas e Inyección de Servicios', link: '/blade-templating/view-composers-and-service-injection' }
       ]}, {
       text: 'Bases de Datos y Eloquent',   // required
