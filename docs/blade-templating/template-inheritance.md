@@ -78,4 +78,75 @@ Pero recuerda, en realidad definimos ese contenido (o, al menos, su “predeterm
 
 Puedes ver que tenemos la opción de incluir el contenido de la vista principal usando la directiva `@parent` dentro de la sección. Si no lo hiciéramos, el contenido de esta sección sobrescribiría por completo todo lo definido en la vista principal para esta sección.
 
-## Including View Partials
+## Incluyendo Vistas Parciales
+
+Ahora que hemos establecido los conceptos básicos de la herencia, hay algunos trucos más que podemos realizar.
+
+### `@include`
+
+¿Qué sucede si estamos en una vista y queremos incluir otra vista? Tal vez tengamos un botón de llamada a la acción _"Sign up"_ que queramos reutilizar en el sitio. Y tal vez queramos personalizar el texto del botón cada vez que lo usemos. Eche un vistazo al ejemplo siguiente.
+
+_Incluir vistas parciales con `@include`_
+```php
+<!-- resources/views/home.blade.php -->
+<div class="content" data-page-name="{{ $pageName }}">
+    <p>Here's why you should sign up for our app: <strong>It's Great.</strong></p>
+
+    @include('sign-up-button', ['text' => 'See just how great it is'])
+</div>
+```
+
+```php
+<!-- resources/views/sign-up-button.blade.php -->
+<a class="button button--callout" data-page-name="{{ $pageName }}">
+    <i class="exclamation-icon"></i> {{ $text }}
+</a>
+```
+
+`@include` extrae el archivo parcial y, opcionalmente, le pasa datos. Tenga en cuenta que no solo puede pasar datos _explícitamente_ a un archivo incluido a través del segundo parámetro de `@include`, sino que también puede hacer referencia a cualquier variable dentro del archivo incluido que esté disponible para la vista que lo incluye (`$pageName`, en este ejemplo). Una vez más, puede hacer lo que quiera, pero le recomendaría que considere siempre pasar explícitamente cada variable que desee utilizar, solo para mayor claridad.
+
+También se utilizan las directivas @includeIf, @includeWhen y @includeFirst, como se muestra en el ejemplo siguiente.
+
+_Incluyendo vistas condicionalmente_
+```php
+{{-- Include a view if it exists --}}
+@includeIf('sidebars.admin', ['some' => 'data'])
+
+{{-- Include a view if a passed variable is truth-y --}}
+@includeWhen($user->isAdmin(), 'sidebars.admin', ['some' => 'data'])
+
+{{-- Include the first view that exists from a given array of views --}}
+@includeFirst(['customs.header', 'header'], ['some' => 'data'])
+```
+
+### `@each`
+
+Probablemente puedas imaginar algunas circunstancias en las que necesitarías recorrer una matriz o una colección y hacer `@include` un parcial para cada elemento. Hay una directiva para eso: `@each`.
+
+Digamos que tenemos una barra lateral compuesta de módulos y queremos incluir varios módulos, cada uno con un título diferente. Eche un vistazo al ejemplo siguiente.
+
+_Uso de vistas parciales en un bucle con `@each`_
+```php
+<!-- resources/views/sidebar.blade.php -->
+<div class="sidebar">
+    @each('partials.module', $modules, 'module', 'partials.empty-module')
+</div>
+```
+
+```php
+<!-- resources/views/partials/module.blade.php -->
+<div class="sidebar-module">
+    <h1>{{ $module->title }}</h1>
+</div>
+```
+
+```php
+<!-- resources/views/partials/empty-module.blade.php -->
+<div class="sidebar-module">
+    No modules :(
+</div>
+```
+
+Tenga en cuenta la sintaxis `@each`. El primer parámetro es el nombre de la parte de la vista. El segundo es la matriz o colección sobre la que se va a iterar. El tercero es el nombre de la variable con la que se pasará cada elemento (en este caso, cada elemento de la matriz `$modules`) a la vista. Y el cuarto parámetro opcional es la vista que se mostrará si la matriz o colección está vacía (u, opcionalmente, puede pasar una cadena aquí que se utilizará como plantilla).
+
+## Using Components
