@@ -14,7 +14,7 @@ La función `@if ($condition)` de _Blade_ se compila como `<?php if ($condition)
 
 _`@if`, `@else`, `@elseif` y `@endif`_
 
-```php
+```html
 @if (count($talks) === 1)
     There is one talk at this time period.
 @elseif (count($talks) === 0)
@@ -30,7 +30,7 @@ Al igual que con las condiciones nativas de PHP, puedes combinarlas como quieras
 Por otro lado, `@unless` es una sintaxis nueva que no tiene un equivalente directo en PHP. Es el inverso directo de `@if`. `@unless ($condition)` es lo mismo que `<?php if (!$condition)`. Puedes ver su uso en el ejemplo siguiente.
 
 _`@unless` y `@endunless`_
-```php
+```html
 @unless ($user->hasPaid())
    You can complete your payment by switching to the payment tab.
 @endunless
@@ -45,21 +45,21 @@ A continuación, echemos un vistazo a los bucles.
 `@for`, `@foreach` y `@while` funcionan igual en _Blade_ que en PHP; consulte los ejemplos siguientes.
 
 _`@for` y `@endfor`_
-```php
+```html
 @for ($i = 0; $i < $talk->slotsCount(); $i++)
     The number is {{ $i }}<br>
 @endfor
 ```
 
 _`@foreach` y `@endforeach`_
-```php
+```html
 @foreach ($talks as $talk)
     • {{ $talk->title }} ({{ $talk->length }} minutes)<br>
 @endforeach
 ```
 
 _`@while` y `@endwhile`_
-```php
+```html
 @while ($item = array_pop($items))
     {{ $item->orSomething() }}<br>
 @endwhile
@@ -70,7 +70,7 @@ _`@while` y `@endwhile`_
 `@forelse` es un `@foreach` que también te permite programar una función de respaldo si el objeto sobre el que estás iterando está vacío. Lo vimos en acción [al comienzo de este capítulo](./echoing-data.html); el ejemplo siguiente muestra otro.
 
 _`@forelse`_
-```php
+```html
 @forelse ($talks as $talk)
     • {{ $talk->title }} ({{ $talk->length }} minutes)<br>
 @empty
@@ -90,7 +90,7 @@ _`@forelse`_
 >- `depth`: ¿Cuántos “niveles” de profundidad tiene este bucle: `1` para un bucle, `2` para un bucle dentro de un bucle, etc.?
 >- `parent`: Una referencia a la variable `$loop` para el elemento del bucle padre si este bucle está dentro de otro bucle `@foreach`; de lo contrario, `null`.
 
->```php
+>```html
 ><ul>
 >@foreach ($pages as $page)
 >    <li>{{ $loop->iteration }}: {{ $page->title }}
