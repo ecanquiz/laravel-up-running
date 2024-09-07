@@ -7,7 +7,7 @@ Laravel ofrece un motor de plantillas personalizado llamado _Blade_, que está i
 Para ver rápidamente cómo se escribe Blade, consulte el ejemplo siguiente.
 
 _Muestras de Blade_
-```php
+```html
 <h1>{{ $group->title }}</h1>
 {!! $group->heroImageHtml() !!}
 
