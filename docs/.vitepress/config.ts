@@ -67,7 +67,8 @@ export default defineConfig({
         { text: 'Haciendo Eco de Los Datos', link: '/blade-templating/echoing-data' },
         { text: 'Estructuras de Control', link: '/blade-templating/control-structures' },
         { text: 'Herencia de Plantilla', link: '/blade-templating/template-inheritance' },       
-        { text: 'Compositores de Vistas e Inyección de Servicios', link: '/blade-templating/view-composers-and-service-injection' }
+        { text: 'Compositores de Vistas e Inyección de Servicios', link: '/blade-templating/view-composers-and-service-injection' },
+        { text: 'Directivas Blade Personalizadas', link: '/blade-templating/custom-blade-directives' }
       ]}, {
       text: 'Bases de Datos y Eloquent',   // required
       path: '/databases-and-eloquent/',

@@ -1,12 +1,12 @@
 # Herencia de Plantilla
 
-_Blade_ proporciona una estructura para la herencia de plantillas que permite que las vistas amplíen, modifiquen e incluyan otras vistas.
+Blade proporciona una estructura para la herencia de plantillas que permite que las vistas amplíen, modifiquen e incluyan otras vistas.
 
-Veamos cómo se estructura la herencia con _Blade_.
+Veamos cómo se estructura la herencia con Blade.
 
 ## Definición de secciones con `@section`/`@show` y `@yield`
 
-Comencemos con un diseño _Blade_ de nivel superior, como en el ejemplo siguiente. Esta es la definición de un contenedor de página genérico en el que luego colocaremos contenido específico de la página.
+Comencemos con un diseño Blade de nivel superior, como en el ejemplo siguiente. Esta es la definición de un contenedor de página genérico en el que luego colocaremos contenido específico de la página.
 
 _Diseño Blade_
 ```html
@@ -26,7 +26,7 @@ _Diseño Blade_
 </html>
 ```
 
-Esto se parece un poco a una página HTML normal, pero puedes ver que hemos definido _yield_ en dos lugares (`title` y `content`) y hemos definido una _section_ en un tercero (`footerScripts`). Tenemos tres directivas _Blade_ aquí: `@yield('content')` solo, `@yield('title', 'Home Page')` con un valor predeterminado definido y `@section/@show` con contenido real en él.
+Esto se parece un poco a una página HTML normal, pero puedes ver que hemos definido _yield_ en dos lugares (`title` y `content`) y hemos definido una _section_ en un tercero (`footerScripts`). Tenemos tres directivas Blade aquí: `@yield('content')` solo, `@yield('title', 'Home Page')` con un valor predeterminado definido y `@section/@show` con contenido real en él.
 
 Aunque cada una tiene un aspecto un poco diferente, _las tres funcionan básicamente de la misma manera_. Las tres definen que hay una sección con un nombre determinado (el primer parámetro) que se puede extender más adelante, y las tres definen qué hacer si la sección no se extiende. Lo hacen proporcionando una cadena _fallback_ (`'Home Page'`), ningún _fallback_ (que simplemente no mostrará nada si no se extiende) o un bloque _fallback_ completo (en este caso, `<script src="app.js"></script>`).
 
@@ -57,7 +57,7 @@ Es posible que hayas notado que el primer ejemplo usa `@section/@show`, pero el 
 Usa `@show` cuando estás definiendo el lugar para una sección, en la plantilla principal. Usa `@endsection` cuando estás definiendo el contenido para una plantilla en una plantilla secundaria
 :::
 
-Esta vista secundaria nos permite cubrir algunos conceptos nuevos en la herencia de _Blade_.
+Esta vista secundaria nos permite cubrir algunos conceptos nuevos en la herencia de Blade.
 
 ### `@extends`
 En el segundo ejemplo, con `@extends('layouts.master')`, definimos que esta vista no debe representarse por sí sola, sino que en su lugar extiende otra vista. Eso significa que su función es definir el contenido de varias secciones, pero no ser independiente. Es casi más como una serie de contenedores de contenido, en lugar de una página HTML. Esta línea también define que la vista que está extendiendo se encuentra en `resources/views/layouts/master.blade.php`.
@@ -203,7 +203,7 @@ Profundicemos en las características de los componentes, cómo están estructur
 
 ### Creando componentes
 
-Los componentes pueden existir como plantillas _Blade_ puras (componentes anónimos) o como plantillas _Blade_ respaldadas por una clase PHP que inyecta datos y funcionalidad (componentes basados ​​en clases).
+Los componentes pueden existir como plantillas Blade puras (componentes anónimos) o como plantillas Blade respaldadas por una clase PHP que inyecta datos y funcionalidad (componentes basados ​​en clases).
 
 Si solo necesita una plantilla, puede generar su componente con el indicador `--view`:
 

@@ -121,6 +121,45 @@ public function boot(): void
 }
 ```
 
-Tenga en cuenta que este vínculo es el mismo que un compositor de vistas basado en clausuras, pero en lugar de pasar una clausura, pasamos el nombre de clase de nuestro compositor de vistas. Ahora, cada vez que _Blade_ renderiza la vista `partials.sidebar`, ejecutará automáticamente nuestro proveedor y pasará a la vista una variable `recentPosts` configurada con los resultados del método `recent()` en nuestro modelo `Post`.
+Tenga en cuenta que este vínculo es el mismo que un compositor de vistas basado en clausuras, pero en lugar de pasar una clausura, pasamos el nombre de clase de nuestro compositor de vistas. Ahora, cada vez que Blade renderiza la vista `partials.sidebar`, ejecutará automáticamente nuestro proveedor y pasará a la vista una variable `recentPosts` configurada con los resultados del método `recent()` en nuestro modelo `Post`.
 
-## Blade Service Injection
+## Inyección de Servicio Blade
+
+Hay tres tipos principales de datos que probablemente inyectaremos en una vista: colecciones de datos para iterar, objetos individuales que mostramos en la página y servicios que generan datos o vistas.
+
+Con un servicio, el patrón probablemente se verá como el ejemplo siguiente, donde inyectamos una instancia de nuestro servicio de análisis en la definición de ruta mediante la introducción de una referencia de tipo en la firma del método de la ruta y luego la pasamos a la vista.
+
+_Inyección de servicios en una vista a través del constructor de definición de ruta_
+```php
+Route::get('backend/sales', function (AnalyticsService $analytics) {
+    return view('backend.sales-graphs')
+        ->with('analytics', $analytics);
+});
+```
+
+Al igual que con los compositores de vistas, la inyección de servicios de Blade ofrece un atajo conveniente para reducir la duplicación en las definiciones de ruta. Normalmente, el contenido de una vista que utiliza nuestro servicio de análisis podría verse como el ejemplo siguiente.
+
+_Uso de un servicio de navegación inyectado en una vista_
+```html
+<div class="finances-display">
+{{ $analytics->getBalance() }} / {{ $analytics->getBudget() }}
+</div>
+```
+
+La inyección del servicio Blade facilita la inyección de una instancia de una clase desde el contenedor directamente en la vista, como en el ejemplo siguiente.
+
+_Inyectar un servicio directamente en una vista_
+```html
+@inject('analytics', 'App\Services\Analytics')
+
+<div class="finances-display">
+    {{ $analytics->getBalance() }} / {{ $analytics->getBudget() }}
+</div>
+```
+
+Como puedes ver, esta directiva `@inject` en realidad ha hecho que esté disponible una variable `$analytics`, que usaremos más adelante en nuestra vista.
+
+El primer parámetro de `@inject` es el nombre de la variable que estás inyectando, y el segundo parámetro es la clase o interfaz de la que quieres inyectar una instancia. Esto se resuelve de la misma manera que cuando escribes una dependencia en un constructor en otra parte de Laravel; si no estás familiarizado con cómo funciona eso, consulta [El Contenedor](../the-container/a-quick-intro-to-dependency-injection.html#el-contenedor) para obtener más información.
+
+Al igual que los compositores de vistas, la inyección de servicios de Blade facilita la disponibilidad de ciertos datos o funcionalidades para cada instancia de una vista, sin tener que inyectarlos a través de la definición de ruta cada vez.
+

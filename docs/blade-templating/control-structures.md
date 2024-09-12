@@ -1,6 +1,6 @@
 # Estructuras de Control
 
-La mayoría de las estructuras de control de _Blade_ te resultarán muy familiares. Muchas reflejan directamente el nombre y la estructura de la misma etiqueta en PHP.
+La mayoría de las estructuras de control de Blade te resultarán muy familiares. Muchas reflejan directamente el nombre y la estructura de la misma etiqueta en PHP.
 
 Hay algunas herramientas útiles, pero en general, las estructuras de control tienen un aspecto más limpio que en PHP.
 
@@ -10,7 +10,7 @@ Primero, echemos un vistazo a las estructuras de control que permiten la lógica
 
 ### `@if`
 
-La función `@if ($condition)` de _Blade_ se compila como `<?php if ($condition): ?>`. `@else`, `@elseif` y `@endif` también se compilan con exactamente el mismo estilo de sintaxis en PHP. Eche un vistazo al ejemplo siguiente.
+La función `@if ($condition)` de Blade se compila como `<?php if ($condition): ?>`. `@else`, `@elseif` y `@endif` también se compilan con exactamente el mismo estilo de sintaxis en PHP. Eche un vistazo al ejemplo siguiente.
 
 _`@if`, `@else`, `@elseif` y `@endif`_
 
@@ -42,7 +42,7 @@ A continuación, echemos un vistazo a los bucles.
 
 ### `@for`, `@foreach` y `@while`
 
-`@for`, `@foreach` y `@while` funcionan igual en _Blade_ que en PHP; consulte los ejemplos siguientes.
+`@for`, `@foreach` y `@while` funcionan igual en Blade que en PHP; consulte los ejemplos siguientes.
 
 _`@for` y `@endfor`_
 ```html
