@@ -18,7 +18,7 @@ export default defineConfig({
       path: '/why-laravel/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: '¿Por qué utilizar un framework? ', link: '/why-laravel/why-use-a-framework' },
         { text: 'Una breve historia de los frameworks web y PHP', link: '/why-laravel/a-short-history-of-web-and-php-frameworks' },
@@ -29,7 +29,7 @@ export default defineConfig({
       text: 'Configurar Entorno de Desarrollo',   // required
       path: '/set-up-laravel-dev-env/',
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Requisitos del Sistema', link: '/set-up-laravel-dev-env/system-requirements' },
         { text: 'Entornos de Desarrollo Local', link: '/set-up-laravel-dev-env/local-development-environments' },        
@@ -41,7 +41,7 @@ export default defineConfig({
         text: 'Enrutamiento y Controladores',   // required
         path: '/routing-and-controllers/',
         collapsible: true,
-        collapsed: true,
+        collapsed: false,
         items: [
           { text: 'MVC, Verbos HTTP y REST', link: '/routing-and-controllers/a-quick-intro-to-mvc-the-http-verbs-and-rest' },
           { text: 'Definiciones de Ruta', link: '/routing-and-controllers/route-definitions' },
@@ -62,18 +62,19 @@ export default defineConfig({
       text: 'Plantillas Blade',   // required
       path: '/blade-templating/',
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Haciendo Eco de Los Datos', link: '/blade-templating/echoing-data' },
         { text: 'Estructuras de Control', link: '/blade-templating/control-structures' },
         { text: 'Herencia de Plantilla', link: '/blade-templating/template-inheritance' },       
         { text: 'Compositores de Vistas e Inyección de Servicios', link: '/blade-templating/view-composers-and-service-injection' },
-        { text: 'Directivas Blade Personalizadas', link: '/blade-templating/custom-blade-directives' }
+        { text: 'Directivas Blade Personalizadas', link: '/blade-templating/custom-blade-directives' },
+        { text: 'Pruebas y Resumen', link: '/blade-templating/testing-and-summary' }
       ]}, {
       text: 'Bases de Datos y Eloquent',   // required
       path: '/databases-and-eloquent/',
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Configuración', link: '/databases-and-eloquent/configuration' },
         { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },        
@@ -82,7 +83,7 @@ export default defineConfig({
       text: 'Recopilación y Manejo de Datos de Usuario',   // required
       path: '/collecting-and-handling-user-data/',
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Validación', link: '/collecting-and-handling-user-data/validation' },
       ]
@@ -90,7 +91,7 @@ export default defineConfig({
       text: 'Artisan y Tinker',   // required
       path: '/artisan-and-tinker/',
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Artisan y Tinker', link: '/artisan-and-tinker/an-introduction-to-artisan' },
       ]
@@ -98,7 +99,7 @@ export default defineConfig({
         text: 'Autenticación y Autorización de Usuarios',   // required
         path: '/user-authentication-and-authorization/',
         collapsible: true,
-        collapsed: true,
+        collapsed: false,
         items: [
           { text: 'El Modelo de Usuario y la Migración', link: '/user-authentication-and-authorization/the-user-model-and-migration' },
         ]
@@ -107,7 +108,7 @@ export default defineConfig({
       path: '/requests-responses-and-middleware/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Ciclo de Vida de Solicitud en Laravel', link: '/requests-responses-and-middleware/laravel-s-request-lifecycle' }
       ]
@@ -116,7 +117,7 @@ export default defineConfig({
       path: '/the-container/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Breve Intro a Inyección de Dependencia', link: '/the-container/a-quick-intro-to-dependency-injection' }
       ]
@@ -125,7 +126,7 @@ export default defineConfig({
       path: '/testing/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: true,
+      collapsed: false,
       items: [
         { text: 'Pruebas', link: '/testing/index' }
       ]
@@ -134,7 +135,7 @@ export default defineConfig({
         path: '/',      // optional, link of the title, which should be an absolute path and must exist
         sidebarDepth: 1,    // optional, defaults to 1
         collapsible: true,
-        collapsed: true,
+        collapsed: false,
         items: [
           { text: 'Fundamentos de APIs JSON Tipo REST', link: '/writing-apis/the-basics-of-rest-like-json-apis' }
         ]}
