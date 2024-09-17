@@ -77,6 +77,7 @@ export default defineConfig({
       collapsed: false,
       items: [
         { text: 'Configuración', link: '/databases-and-eloquent/configuration' },
+        { text: 'Migraciones', link: '/databases-and-eloquent/migrations' },        
         { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },        
       ]
     }, {
