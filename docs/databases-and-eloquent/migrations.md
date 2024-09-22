@@ -6,7 +6,7 @@ Los frameworks modernos como Laravel facilitan la definición de la estructura d
 
 Una migración es un archivo único que define dos cosas: las modificaciones deseadas al ejecutar esta migración _**up**_ y, opcionalmente, las modificaciones deseadas al ejecutar esta migración _**down**_.
 
->## "Up" y "Down" en las Migraciones
+>### "Up" y "Down" en las Migraciones
 >
 >Las migraciones siempre se ejecutan en orden por fecha. Cada archivo de migración se llama de la siguiente manera: `2018_10_12_000000_create_users_table.php`. Cuando se migra un nuevo sistema, el sistema toma cada migración, comenzando en la fecha más temprana, y ejecuta su método `up()` — En este punto, lo estás migrando "hacia arriba". Pero el sistema de migración también te permite "revertir" tu conjunto de migraciones más reciente. Tomará cada una de ellas y ejecutará su método `down()`, que debería deshacer los cambios que haya realizado la migración hacia arriba.
 >
@@ -133,4 +133,46 @@ Y estos son los métodos especiales (unidos) de `Blueprint`:
 - **`softDeletes(colName, precision)`**, **`softDeletesTz(colName, precision)`**: Agrega una marca de tiempo `delete_at` para usar con _soft deletes_ con precisión opcional y variaciones que tienen en cuenta la zona horaria
 - **`morphs(colName)`**, **`nullableMorphs(colName)`**, **`uuidMorphs(relationshipName)`**, **`nullableUuidMorphs(relationshipName)`**: Para un `colName` proporcionado, agrega un entero `colName_id` y una cadena `colName_type` (por ejemplo, `morphs(tag)` agrega un entero `tag_id` y una cadena `tag_type`); para usar en relaciones polimórficas, usando `ID` o `UUID`, y se puede configurar como _nullable_ según el nombre del método
 
-### Building extra properties fluently
+### Construir propiedades extra con fluidez
+
+La mayoría de las propiedades de una definición de campo — por ejemplo, su longitud — se establecen como segundo parámetro del método de creación de campo, como vimos en la sección anterior. Pero hay algunas otras propiedades que estableceremos encadenando más llamadas de método después de la creación de la columna. Por ejemplo, este campo `email` es nulo y se colocará (en MySQL) justo después del campo `last_name`:
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->string('email')->nullable()->after('last_name');
+});
+```
+
+Los siguientes métodos son algunos de los que se utilizan para establecer propiedades adicionales de un campo; consulte la [documentación de migraciones](https://laravel.com/docs/11.x/migrations#column-modifiers) para obtener una lista exhaustiva.
+
+- `nullable()`: Permite insertar valores `NULL` en esta columna
+- `default('default content')`: Especifica el contenido predeterminado para esta columna si no se proporciona ningún valor
+- `unsigned()`: Marca las columnas de números enteros como sin signo (no negativos ni positivos, sino simplemente un número entero)
+- `first()` _(sólo MySQL)_: Coloca la columna primero en el orden de columnas
+- `after(colName)` _(sólo MySQL)_: Coloca la columna después de otra columna en el orden de columnas
+- `charset(charset)` _(solo MySQL)_: Establece el conjunto de caracteres para una columna
+- `collation(collation)`: Establece la colación para una columna
+- `invisible()` _(sólo MySQL)_: Hace que la columna sea invisible para las consultas `SELECT`
+- `useCurrent()`: Se utiliza en columnas `TIMESTAMP` para usar `CURRENT_TIMESTAMP` como valor predeterminado
+- `isGeometry()` _(sólo PostgreSQL)_: Establece un tipo de columna en `GEOMETRY` (el valor predeterminado es `GEOGRAPHY`)
+- `unique()`: Agrega un índice `UNIQUE`
+- `primary()`: agrega un índice de clave principal
+- `index()`: Agrega un índice básico
+
+Tenga en cuenta que `unique()`, `primary()` e `index()` también se pueden usar fuera del contexto de construcción de columnas fluidas, que cubriremos más adelante.
+
+### Eliminar tablas
+
+Si desea eliminar una tabla, utilice el método `dropIfExists()` en `Schema`, que toma un parámetro, el nombre de la tabla:
+
+```php
+Schema::dropIfExists('contacts');
+```
+
+### Modificar columnas
+
+Para modificar una columna, simplemente escriba el código que escribiría para crear la columna como si fuera nueva y luego agregue una llamada al método `change()` después de ella.
+
+:::info Required Dependency Before Modifying Columns
+If you are not using a database that natively supports renaming and dropping columns (the latest versions of the most common databases support these operations), before you can modify any columns, you’ll need to run composer require doctrine/dbal.
+:::
