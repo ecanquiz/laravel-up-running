@@ -173,6 +173,159 @@ Schema::dropIfExists('contacts');
 
 Para modificar una columna, simplemente escriba el código que escribiría para crear la columna como si fuera nueva y luego agregue una llamada al método `change()` después de ella.
 
-:::info Required Dependency Before Modifying Columns
-If you are not using a database that natively supports renaming and dropping columns (the latest versions of the most common databases support these operations), before you can modify any columns, you’ll need to run composer require doctrine/dbal.
+:::info Dependencia Requerida Antes de Modificar Columnas
+Si no está utilizando una base de datos que admita de forma nativa el cambio de nombre y la eliminación de columnas (las últimas versiones de las bases de datos más comunes admiten estas operaciones), antes de poder modificar cualquier columna, deberá ejecutar `composer require doctrina/dbal`.
 :::
+
+Entonces, si tenemos una columna de cadena llamada `name` que tiene una longitud de `255` y queremos cambiar su longitud a `100`, así es como lo escribiríamos:
+
+```php
+Schema::table('users', function (Blueprint $table) {
+    $table->string('name', 100)->change();
+});
+```
+
+Lo mismo sucede si queremos ajustar alguna de sus propiedades que no estén definidas en el nombre del método. Para hacer que un campo sea anulable, hacemos esto:
+
+
+```php
+Schema::table('contacts', function (Blueprint $table) {
+    $table->string('deleted_at')->nullable()->change();
+});
+```
+
+Así es como cambiamos el nombre de una columna:
+
+```php
+Schema::table('contacts', function (Blueprint $table)
+{
+    $table->renameColumn('promoted', 'is_promoted');
+});
+```
+
+Y así es como eliminamos una columna:
+
+```php
+Schema::table('contacts', function (Blueprint $table)
+{
+    $table->dropColumn('votes');
+});
+```
+
+>### Modificar Varias Columnas a la Vez en SQLite
+>
+>Si intenta eliminar o modificar varias columnas dentro de una única clausura de migración y está utilizando SQLite, se encontrará con errores.
+>
+>En la [Pruebas](../testing/) recomiendo que utilices SQLite para tu base de datos de prueba, por lo que incluso si estás usando una base de datos más tradicional, es posible que quieras considerar esto como una limitación para fines de prueba.
+>
+>Sin embargo, no es necesario crear una nueva migración para cada una de ellas. En su lugar, solo es necesario crear varias llamadas a `Schema::table()` dentro del método `up()` de la migración:
+>```php
+>public function up(): void
+>{
+>    Schema::table('contacts', function (Blueprint $table)
+>    {
+>        $table->dropColumn('is_promoted');
+>    );
+>
+>    Schema::table('contacts', function (Blueprint $table)
+>    {
+>        $table->dropColumn('alternate_email');
+>    });
+>}
+>```
+
+### Aplastar migraciones
+
+Si tienes demasiadas migraciones como para pensar en ellas, puedes fusionarlas todas en un único archivo SQL que Laravel ejecutará antes de ejecutar cualquier migración futura. Esto se llama "aplastar" tus migraciones.
+
+```sh
+# Squash the schema but keep your existing migrations
+php artisan schema:dump
+
+# Dump the current database schema and delete all existing migrations
+php artisan schema:dump --prune
+```
+
+Laravel solo ejecuta estos volcados si detecta que no se han ejecutado migraciones hasta el momento. Eso significa que puedes comprimir tus migraciones y no dañará tus aplicaciones ya implementadas.
+
+:::info
+Si usa volcados de esquema, no puede usar SQLite en memoria; solo funciona en MySQL, PostgreSQL y SQLite de archivos locales.
+:::
+
+### Índices y claves foráneas
+
+Hemos explicado cómo crear, modificar y eliminar columnas. Pasemos ahora a indexarlas y relacionarlas.
+
+Si no está familiarizado con los índices, sus bases de datos pueden sobrevivir si no los utiliza nunca, pero son bastante importantes para la optimización del rendimiento y para algunos controles de integridad de datos con respecto a las tablas relacionadas. Le recomiendo que lea sobre ellos, pero si es absolutamente necesario, puede omitir esta sección por ahora.
+
+### Cómo agregar índices
+
+Consulte el ejemplo siguiente para ver cómo agregar índices a su columna.
+
+_Cómo agregar índices de columna en migraciones_
+```php
+// After columns are created...
+$table->primary('primary_id'); // Primary key; unnecessary if used increments()
+$table->primary(['first_name', 'last_name']); // Composite keys
+$table->unique('email'); // Unique index
+$table->unique('email', 'optional_custom_index_name'); // Unique index
+$table->index('amount'); // Basic index
+$table->index('amount', 'optional_custom_index_name'); // Basic index
+```
+
+Tenga en cuenta que el primer ejemplo, `primary()`, no es necesario si está utilizando los métodos `increments()` o `bigIncrements()` para crear su índice; esto agregará automáticamente un índice de clave principal para usted.
+
+
+### Eliminando índices
+
+Podemos eliminar índices como se muestra en el ejemplo siguiente.
+
+_Eliminar índices de columnas en migraciones_
+```php
+$table->dropPrimary('contacts_id_primary');
+$table->dropUnique('contacts_email_unique');
+$table->dropIndex('optional_custom_index_name');
+
+// If you pass an array of column names to dropIndex, it will
+// guess the index names for you based on the generation rules
+$table->dropIndex(['email', 'amount']);
+```
+
+### Agregar y eliminar claves foráneas
+
+Para agregar una clave foránea que defina que una columna particular hace referencia a una columna de otra tabla, la sintaxis de Laravel es simple y clara:
+
+```php
+$table->foreign('user_id')->references('id')->on('users');
+```
+
+Aquí agregamos un índice `foreign` en la columna `user_id`, lo que muestra que hace referencia a la columna `id` en la tabla `users`. No podría ser más simple.
+
+Si queremos especificar restricciones de clave foránea, también podemos hacerlo con `cascadeOnUpdate()`, `restrictOnUpdate()`, `cascadeOnDelete()`, `restrictOnDelete()` y `nullOnDelete()`. Por ejemplo:
+
+```php
+$table->foreign('user_id')
+    ->references('id')
+    ->on('users')
+    ->cascadeOnDelete();
+```
+
+También hay un alias para crear restricciones de clave foránea. Usándolo, el ejemplo anterior se puede escribir así:
+
+```php
+$table->foreignId('user_id')->constrained()->cascadeOnDelete();
+```
+
+Para eliminar una clave foránea, podemos eliminarla haciendo referencia a su nombre de índice (que se genera automáticamente al combinar los nombres de las columnas y tablas a las que se hace referencia):
+
+```php
+$table->dropForeign('contacts_user_id_foreign');
+```
+
+o pasándole una matriz de los campos a los que hace referencia en la tabla local:
+
+```php
+$table->dropForeign(['user_id']);
+```
+
+## Running Migrations
