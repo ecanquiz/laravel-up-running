@@ -328,4 +328,31 @@ o pasándole una matriz de los campos a los que hace referencia en la tabla loca
 $table->dropForeign(['user_id']);
 ```
 
-## Running Migrations
+## Ejecución de Migraciones
+
+Una vez que haya definido sus migraciones, ¿cómo las ejecuta? Hay un comando de Artisan para eso:
+
+```sh
+php artisan migrate
+```
+
+Este comando ejecuta todas las migraciones “pendientes” (ejecutando el método `up()` en cada una). Laravel lleva un registro de las migraciones que has ejecutado y las que no. Cada vez que ejecutas este comando, comprueba si has ejecutado todas las migraciones disponibles y, si no lo has hecho, ejecutará las que queden.
+
+Hay algunas opciones en este espacio de nombres con las que puedes trabajar. Primero, puedes ejecutar tus migraciones _y_ tus semillas (que abordaremos a continuación):
+
+```sh
+php artisan migrate --seed
+```
+
+También puede ejecutar cualquiera de los siguientes comandos:
+
+- `migrate:install`: Crea la tabla de base de datos que realiza un seguimiento de las migraciones que ha ejecutado y las que no; esto se ejecuta automáticamente cuando ejecuta sus migraciones, por lo que básicamente puede ignorarlo.
+- `migrate:reset`: Revierte cada migración de base de datos que haya ejecutado en esta instancia.
+- `migrate:refresh`: Revierte todas las migraciones de bases de datos que haya ejecutado en esta instancia y, a continuación, ejecuta todas las migraciones disponibles. Es lo mismo que ejecutar `migrate:reset` seguido de `migrate`.
+- `migrate:fresh`: Elimina todas las tablas y vuelve a ejecutar cada migración. Es lo mismo que `refresh`, pero no se ocupa de las migraciones _"down"_ — simplemente elimina las tablas y luego vuelve a ejecutar las migraciones _"up"_.
+- `migrate:rollback`: Revierte _solo_ las migraciones que se ejecutaron la última vez que ejecutó `migrate` o, con la opción agregada `--step=n`, revierte la cantidad de migraciones que especifique.
+- `migrate:status`: Muestra una tabla que enumera cada migración, con una `Y` o `N` al lado de cada una indicando si ya se ejecutó o no en este entorno.
+
+:::info Migración con Homestead/Vagrant
+Si está ejecutando migraciones en su máquina local y su archivo `.env` apunta a una base de datos en un equipo Vagrant, sus migraciones fallarán. Deberá ingresar por `ssh` a su equipo Vagrant y luego ejecutar las migraciones desde allí. Lo mismo se aplica a las semillas y cualquier otro comando Artisan que afecte o lea desde la base de datos.
+:::
