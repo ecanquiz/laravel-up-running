@@ -178,3 +178,23 @@ Si desea garantizar que los valores generados aleatoriamente de cualquier entrad
 return ['email' => fake()->unique()->email()];
 ```
 :::
+
+### Utilizando una Fábrica Modelo
+
+Existen dos contextos principales en los que utilizaremos fábricas de modelos: [pruebas](../testing/), y siembras, que abordaremos aquí. Escribamos una siembra utilizando una fábrica de modelos; observemos el ejemplo siguiente.
+
+_Uso de fábricas de modelos_
+```php
+$post = Post::factory()->create([
+    'title' => 'My greatest post ever',
+]);
+
+// Pro-level factory; but don't get overwhelmed!
+User::factory()->count(20)->has(Address::factory()->count(2))->create()
+```
+
+Para crear un objeto, utilizamos el método `factory()` en el modelo. Luego podemos ejecutar uno de dos métodos en él: `make()` o `create()`.
+
+Ambos métodos generan una instancia de este modelo especificado, utilizando la definición en la clase de fábrica. La diferencia es que `make()` crea la instancia pero no la guarda (aún) en la base de datos, mientras que `create()` la guarda en la base de datos al instante.
+
+### Overriding properties when calling a model factory
