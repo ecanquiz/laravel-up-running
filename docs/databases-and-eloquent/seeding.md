@@ -197,4 +197,79 @@ Para crear un objeto, utilizamos el método `factory()` en el modelo. Luego pode
 
 Ambos métodos generan una instancia de este modelo especificado, utilizando la definición en la clase de fábrica. La diferencia es que `make()` crea la instancia pero no la guarda (aún) en la base de datos, mientras que `create()` la guarda en la base de datos al instante.
 
-### Overriding properties when calling a model factory
+### Reemplazo de propiedades al llamar a una fábrica de modelos
+
+Si pasa una matriz a `make()` o `create()`, puede remplazar claves específicas de la fábrica, como hicimos en el ejemplo anterior para establecer manualmente el título en la publicación.
+
+### Generar más de una instancia con una fábrica de modelos.
+
+Si llamas al método `count()` después del método `factory()`, puedes especificar que estás creando más de una instancia. En lugar de devolver una sola instancia, devolverá una colección de instancias. Esto significa que puedes tratar el resultado como una matriz, iterando sobre ellas o pasándolas a cualquier método que tome más de un objeto:
+
+```php
+$posts = Post::factory()->count(6);
+```
+
+También puedes, opcionalmente, definir una “secuencia” de cómo remplazar cada uno:
+
+```php
+$posts = Post::factory()
+    ->count(6)
+    ->state(new Sequence(
+        ['is_published' => true],
+        ['is_published' => false],
+    ))
+    ->create();
+```
+
+### Fábricas de modelos de nivel profesional
+
+Ahora que hemos cubierto los usos y disposiciones más comunes de las fábricas modelo, profundicemos en algunas de las formas más complicadas en que podemos usarlas.
+
+### Adjuntar relaciones al definir fábricas de modelos
+
+A veces, es necesario crear un elemento relacionado junto con el elemento que se está creando. Puede llamar al método de fábrica en el modelo relacionado para obtener su ID, como se muestra en el ejemplo siguiente.
+
+_Creación de un elemento relacionado en una fábrica_
+```php
+<?php
+
+namespace Database\Factories;
+
+use App\Models\Contact;
+use Illuminate\Database\Eloquent\Factories\Factory;
+
+class ContactFactory extends Factory
+{
+    protected $model = Contact::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => 'Lupita Smith',
+            'email' => 'lupita@gmail.com',
+            'company_id' => \App\Models\Company::factory(),
+        ];
+    }
+}
+```
+
+También puede pasar una clausura en el que se pasa un único parámetro, que contiene la forma de matriz del elemento generado hasta ese momento. Esto se puede utilizar de otras maneras, como se muestra en el ejemplo siguiente.
+
+_Uso de valores desde otros parámetros en una fábrica_
+```php
+// ContactFactory.php
+public function definition(): array
+{
+    return [
+        'name' => 'Lupita Smith',
+        'email' => 'lupita@gmail.com',
+        'company_id' => Company::factory(),
+        'company_size' => function (array $attributes) {
+            // Uses the "company_id" property generated above
+            return Company::find($attributes['company_id'])->size;
+        },
+    ];
+}
+```
+
+### Attaching related items when generating model factory instances
