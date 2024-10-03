@@ -272,4 +272,54 @@ public function definition(): array
 }
 ```
 
-### Attaching related items when generating model factory instances
+### Adjuntar elementos relacionados al generar instancias de fábrica de modelos
+
+Si bien ya hemos cubierto cómo definir una relación en una definición de fábrica, es mucho más común que definamos los elementos relacionados de nuestra instancia justo cuando la creamos.
+
+Hay dos métodos principales que usaremos para esto: `has()` y `for()`. `has()` nos permite definir que la instancia que estamos creando “has” hijos u otros elementos en una relación de tipo “hasMany”, mientras que `for()` nos permite definir que la instancia que estamos creando “belongsTo” otro elemento. Veamos algunos ejemplos para tener una mejor idea de cómo funcionan.
+
+En el ejemplo siguiente, supongamos que un `Contact` tiene muchas `Addresses`.
+
+_Uso de `has()` al generar modelos relacionados_
+```php
+// Attach 3 addresses
+Contact::factory()
+    ->has(Address::factory()->count(3))
+    ->create()
+```
+```php
+// Accessing information about each user in the child factory
+$contact = Contact::factory()
+    ->has(
+        Address::factory()
+            ->count(3)
+            ->state(function (array $attributes, User $user) {
+                return ['label' => $user->name . ' address'];
+            })
+    )
+    ->create();
+```
+
+Ahora imaginemos que estamos creando la instancia secundaria en lugar de la instancia principal. Generemos una dirección.
+
+En este tipo de circunstancias, normalmente se puede asumir que la definición de fábrica del hijo se encargará de generar la instancia del padre. Entonces, ¿para qué sirve `for()`? Es más útil si desea definir algo específico sobre el padre, normalmente una o más de sus propiedades, o pasar una instancia de modelo específica. Eche un vistazo al ejemplo siguiente para ver cómo se usa más comúnmente.
+
+_Uso de `for()` al generar modelos relacionados_
+```php
+// Specify details about the created parent
+Address::factory()
+    ->count(3)
+    ->for(Contact::factory()->state([
+        'name' => 'Imani Carette',
+    ]))
+    ->create();
+```
+```php
+// Use an existing parent model (assuming we already have it as $contact)
+Address::factory()
+    ->count(3)
+    ->for($contact)
+    ->create();
+```
+
+### Defining and accessing multiple model factory states
