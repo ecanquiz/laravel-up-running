@@ -323,3 +323,62 @@ Address::factory()
 ```
 
 ### Defining and accessing multiple model factory states
+
+Volvamos a `ContactFactory.php` (los dos ejemplos [Creando una Fábrica de Modelos](./seeding.html#creando-una-fabrica-de-modelos)) por un segundo. Tenemos una fábrica de contactos base definida:
+
+```php
+class ContactFactory extends Factory
+{
+    protected $model = Contact::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => 'Lupita Smith',
+            'email' => 'lupita@gmail.com',
+        ];
+    }
+}
+```
+
+Pero a veces se necesita más de una fábrica para una clase de objeto. ¿Qué sucede si necesitamos poder agregar algunos contactos que sean personas muy importantes (VIPs)? Podemos usar el método `state()` para definir un segundo estado de fábrica para esto, como se ve en el ejemplo siguiente. El método `state()` recibe una matriz de cualquier atributo que desee configurar específicamente
+para este estado.
+
+_Definición de múltiples estados de fábrica para el mismo modelo_
+```php
+class ContactFactory extends Factory
+{
+    protected $model = Contact::class;
+
+    public function definition(): array
+    {
+        return [
+            'name' => 'Lupita Smith',
+            'email' => 'lupita@gmail.com',
+        ];
+    }
+
+    public function vip()
+    {
+        return $this->state(function (array $attributes) {
+            return [
+                'vip' => true,
+                // Uses the "company_id" property from the $attributes
+                'company_size' => function () use ($attributes) {
+                    return Company::find($attributes['company_id'])->size;
+                },
+            ];
+        });
+    }
+}
+```
+
+Ahora, creemos una instancia de un estado específico:
+
+```php
+$vip = Contact::factory()->vip()->create();
+
+$vips = Contact::factory()->count(3)->vip()->create();
+```
+
+### Using the same model as the relationship in complex factory Setups
