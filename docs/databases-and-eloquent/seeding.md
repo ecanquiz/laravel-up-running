@@ -381,4 +381,19 @@ $vip = Contact::factory()->vip()->create();
 $vips = Contact::factory()->count(3)->vip()->create();
 ```
 
-### Using the same model as the relationship in complex factory Setups
+### Usando el mismo modelo que la relación en configuraciones de fábrica complejas
+
+A veces tienes una fábrica que crea items relacionados a través de sus fábricas, y dos o más de ellas tienen la misma relación. Tal vez generar un `Trip` con tu fábrica genere automáticamente una `Reservation` y un `Receipt`, y los tres deberían estar asociados al mismo `User`. Cuando vayas a crear el `Trip`, cada una de las fábricas creará su propio usuario manualmente, a menos que les indiques que lo hagan de otra manera.
+
+Con el método `recycle()`, puede indicar que cada fábrica llamada en la cadena utilice la misma instancia de un objeto determinado. Como puede ver en el ejemplo siguiente, esto proporciona una sintaxis simple para garantizar que se utilice el mismo modelo en cada lugar a lo largo de una cadena de fábricas.
+
+_Usar `recycle()` para usar la misma instancia para cada relación en una cadena de fábrica_
+```php
+$user = User::factory()->create();
+
+$trip = Trip::factory()
+    ->recycle($user)
+    ->create();
+```
+
+Uf. Eso fue mucho. No te preocupes si te resultó difícil seguirlo — la última parte definitivamente fue algo de nivel superior. Volvamos a lo básico y hablemos sobre el núcleo de las herramientas de base de datos de Laravel: el generador de consultas.
