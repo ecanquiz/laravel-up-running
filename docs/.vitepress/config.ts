@@ -10,26 +10,32 @@ export default defineConfig({
     logo: '/me.jpg',
     nav: [
       { text: 'Inicio', link: '/' },
-      { text: 'Comenzar', link: '/why-laravel/why-use-a-framework' },
+      { text: 'Comenzar', link: '/why-laravel/' },
       { text: 'ecanquiz', link: 'https://ecanquiz.github.io/' },     
     ],
-        sidebar: [{ 
-      text: '¿Por qué Laravel?',   // required
+    sidebar: [{      
+        path: '/',      // optional, link of the title, which should be an absolute path and must exist        
+        sidebarDepth: 1,    // optional, defaults to 1
+        items: [
+          { text: '¿Por qué Laravel?', link: '/why-laravel/' },
+        ]
+      }, { 
+      text: 'Utilizar un Framework?',   // required
       path: '/why-laravel/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
-        { text: '¿Por qué utilizar un framework? ', link: '/why-laravel/why-use-a-framework' },
-        { text: 'Una breve historia de los frameworks web y PHP', link: '/why-laravel/a-short-history-of-web-and-php-frameworks' },
-        { text: '¿Qué tiene de especial Laravel?', link: '/why-laravel/what-s-so-special-about-laravel' },
+        { text: '¿Por Qué Utilizar un Framework? ', link: '/why-laravel/why-use-a-framework' },
+        { text: 'Una Breve Historia de los Frameworks Web y PHP', link: '/why-laravel/a-short-history-of-web-and-php-frameworks' },
+        { text: '¿Qué Tiene de Especial Laravel?', link: '/why-laravel/what-s-so-special-about-laravel' },
         { text: 'Cómo Funciona', link: '/why-laravel/how-it-works' },
-        { text: '¿Por qué Laravel?', link: '/why-laravel/why-laravel' }
+        { text: '¿Por Qué Laravel?', link: '/why-laravel/why-laravel' }
       ]}, {
       text: 'Configurar Entorno de Desarrollo',   // required
       path: '/set-up-laravel-dev-env/',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Requisitos del Sistema', link: '/set-up-laravel-dev-env/system-requirements' },
         { text: 'Entornos de Desarrollo Local', link: '/set-up-laravel-dev-env/local-development-environments' },        
@@ -41,7 +47,7 @@ export default defineConfig({
         text: 'Enrutamiento y Controladores',   // required
         path: '/routing-and-controllers/',
         collapsible: true,
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: 'MVC, Verbos HTTP y REST', link: '/routing-and-controllers/a-quick-intro-to-mvc-the-http-verbs-and-rest' },
           { text: 'Definiciones de Ruta', link: '/routing-and-controllers/route-definitions' },
@@ -62,7 +68,7 @@ export default defineConfig({
       text: 'Plantillas Blade',   // required
       path: '/blade-templating/',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Haciendo Eco de Los Datos', link: '/blade-templating/echoing-data' },
         { text: 'Estructuras de Control', link: '/blade-templating/control-structures' },
@@ -74,7 +80,7 @@ export default defineConfig({
       text: 'Bases de Datos y Eloquent',   // required
       path: '/databases-and-eloquent/',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Configuración', link: '/databases-and-eloquent/configuration' },
         { text: 'Migraciones', link: '/databases-and-eloquent/migrations' },
@@ -86,7 +92,7 @@ export default defineConfig({
       text: 'Recopilación y Manejo de Datos de Usuario',   // required
       path: '/collecting-and-handling-user-data/',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Validación', link: '/collecting-and-handling-user-data/validation' },
       ]
@@ -94,7 +100,7 @@ export default defineConfig({
       text: 'Artisan y Tinker',   // required
       path: '/artisan-and-tinker/',
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Artisan y Tinker', link: '/artisan-and-tinker/an-introduction-to-artisan' },
       ]
@@ -102,7 +108,7 @@ export default defineConfig({
         text: 'Autenticación y Autorización de Usuarios',   // required
         path: '/user-authentication-and-authorization/',
         collapsible: true,
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: 'El Modelo de Usuario y la Migración', link: '/user-authentication-and-authorization/the-user-model-and-migration' },
         ]
@@ -111,7 +117,7 @@ export default defineConfig({
       path: '/requests-responses-and-middleware/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Ciclo de Vida de Solicitud en Laravel', link: '/requests-responses-and-middleware/laravel-s-request-lifecycle' }
       ]
@@ -120,7 +126,7 @@ export default defineConfig({
       path: '/the-container/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Breve Intro a Inyección de Dependencia', link: '/the-container/a-quick-intro-to-dependency-injection' }
       ]
@@ -129,7 +135,7 @@ export default defineConfig({
       path: '/testing/',      // optional, link of the title, which should be an absolute path and must exist
       sidebarDepth: 1,    // optional, defaults to 1
       collapsible: true,
-      collapsed: false,
+      collapsed: true,
       items: [
         { text: 'Pruebas', link: '/testing/index' }
       ]
@@ -138,7 +144,7 @@ export default defineConfig({
         path: '/',      // optional, link of the title, which should be an absolute path and must exist
         sidebarDepth: 1,    // optional, defaults to 1
         collapsible: true,
-        collapsed: false,
+        collapsed: true,
         items: [
           { text: 'Fundamentos de APIs JSON Tipo REST', link: '/writing-apis/the-basics-of-rest-like-json-apis' }
         ]}

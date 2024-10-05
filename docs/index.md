@@ -12,7 +12,7 @@ hero:
   actions:
     - theme: brand
       text: Comenzar
-      link: /why-laravel/why-use-a-framework
+      link: /why-laravel/
     - theme: alt
       text: ecanquiz
       link: https://ecanquiz.github.io/

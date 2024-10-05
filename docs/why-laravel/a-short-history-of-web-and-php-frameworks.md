@@ -1,4 +1,4 @@
-# Una breve historia de los frameworks web y PHP
+# Una Breve Historia de los Frameworks Web y PHP
 
 Una parte importante para poder responder la pregunta "¿Por qué Laravel?" es comprender la historia de Laravel y comprender lo que vino antes. Antes del aumento de popularidad de Laravel, había una variedad de frameworks y otros movimientos en PHP y otros espacios de desarrollo web.
 
