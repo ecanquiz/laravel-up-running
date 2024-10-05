@@ -1,4 +1,4 @@
-# ¿Qué tiene de especial Laravel?
+# ¿Qué Tiene de Especial Laravel?
 
 Entonces, ¿qué es lo que distingue a Laravel? ¿Por qué vale la pena tener más de un framework PHP a la vez? Todos usan componentes de Symfony de todos modos, ¿verdad? Hablemos un poco sobre lo que hace que Laravel "funcione".
 
