@@ -14,13 +14,13 @@ Ahora que está conectado y ha migrado y agregado las semillas a sus tablas, com
 
 La arquitectura de base de datos de Laravel puede conectarse a MySQL, PostgreSQL, SQLite y SQL Server a través de una única interfaz, con solo cambiar algunos ajustes de configuración.
 
-Si alguna vez ha utilizado un framework PHP, probablemente haya utilizado una herramienta que le permite ejecutar consultas SQL _"raw"_ (sin procesar) con un escape básico para mayor seguridad. El generador de consultas es eso, con muchas capas de conveniencia y ayudantes encima. Entonces, comencemos con algunas llamadas simples.
+Si alguna vez ha utilizado un framework PHP, probablemente haya utilizado una herramienta que le permite ejecutar consultas SQL _"raw"_ (crudo) con un escape básico para mayor seguridad. El generador de consultas es eso, con muchas capas de conveniencia y ayudantes encima. Entonces, comencemos con algunas llamadas simples.
 
 ## Uso Básico de la Fachada `DB`
 
-Antes de comenzar a crear consultas complejas con encadenamiento de métodos fluido, veamos algunos ejemplos de comandos de creación de consultas. La fachada `DB` se utiliza tanto para el encadenamiento de consultas como para consultas sin formato más simples, como se ilustra en el ejemplo siguiente.
+Antes de comenzar a crear consultas complejas con encadenamiento de métodos fluido, veamos algunos ejemplos de comandos de creación de consultas. La fachada `DB` se utiliza tanto para el encadenamiento de consultas como para consultas crudas más simples, como se ilustra en el ejemplo siguiente.
 
-_Ejemplo de uso de SQL sin procesar y generador de consultas_
+_Ejemplo de uso de SQL crudo y generador de consultas_
 ```php
 // Basic statement
 DB::statement('drop table users');
@@ -40,4 +40,83 @@ DB::table('users')
     ->get();
 ```
 
-## Raw SQL
+## SQL Crudo
+
+Como vio en el ejemplo anterior, es posible realizar cualquier llamada cruda a la base de datos utilizando la fachada `DB` y el método `statement()`: 
+
+```php
+DB::statement('SQL statement here');
+```
+
+Pero también hay métodos específicos para varias acciones comunes: `select()`, `insert()`, `update()` y `delete()`. Estas siguen siendo llamadas sin formato, pero hay diferencias. En primer lugar, el uso de `update()` y `delete()` devolverá el número de filas afectadas, mientras que `statement()` no lo hará; en segundo lugar, con estos métodos queda más claro para los futuros desarrolladores exactamente qué tipo de declaración estás haciendo.
+
+
+### Selecciones crudas
+
+El método específico de base de datos más simple es `select()`. Puede ejecutarlo sin parámetros adicionales:
+
+
+```php
+$users = DB::select('select * from users');
+```
+
+Esto devolverá una matriz de objetos `stdClass`.
+
+
+### Vinculaciones de parámetros y vinculaciones con nombres
+
+La arquitectura de base de datos de Laravel permite el uso de la vinculación de parámetros PDO (objeto de datos PHP, la capa de acceso a la base de datos nativa de PHP), que protege sus consultas de posibles ataques SQL. Pasar un parámetro a una declaración es tan simple como reemplazar el valor en su declaración con un `?`, y luego agregar el valor al segundo parámetro de su llamada:
+
+
+```php
+$usersOfType = DB::select(
+    'select * from users where type = ?',
+    [$type]
+);
+```
+
+También puedes nombrar esos parámetros para mayor claridad:
+
+
+```php
+$usersOfType = DB::select(
+    'select * from users where type = :type',
+    ['type' => $userType]
+);
+```
+
+### Inserciones crudas
+
+Desde aquí, todos los comandos crudos tienen un aspecto muy similar. Las inserciones crudas tienen este aspecto:
+
+
+```php
+DB::insert(
+    'insert into contacts (name, email) values (?, ?)',
+    ['sally', 'sally@me.com']
+);
+```
+
+### Actualizaciones crudas
+
+Las actualizaciones se ven así:
+
+```php
+$countUpdated = DB::update(
+    'update contacts set status = ? where id = ?',
+    ['donor', $id]
+);
+```
+
+### Eliminaciones crudas
+
+Y las eliminaciones se ven así:
+
+```php
+$countDeleted = DB::delete(
+    'delete from contacts where archived = ?',
+    [true]
+);
+````
+
+### Chaining with the Query Builder
