@@ -117,6 +117,22 @@ $countDeleted = DB::delete(
     'delete from contacts where archived = ?',
     [true]
 );
-````
+```
 
-### Chaining with the Query Builder
+## Encadenamiento con el Generador de Consultas
+
+Hasta ahora, no hemos utilizado el generador de consultas en sí. Solo hemos utilizado llamadas de método simples en la fachada `DB`. Vamos a crear algunas consultas.
+
+El generador de consultas permite encadenar métodos para, como ya habrás adivinado, _crear una consulta_. Al final de la cadena, utilizarás algún método — probablemente `get()`— para activar la ejecución real de la consulta que acabas de crear.
+
+Veamos un ejemplo rápido:
+
+```php
+$usersOfType = DB::table('users')
+    ->where('type', $type)
+    ->get();
+```
+
+Aquí, creamos nuestra consulta (tabla `users`, tipo `$type`) y luego ejecutamos la consulta y obtuvimos nuestro resultado. Tenga en cuenta que, a diferencia de las llamadas anteriores, esto devolverá una _colección_ de objetos `stdClass` en lugar de una matriz.
+
+>### Illuminate Collections
