@@ -141,19 +141,29 @@ export default defineConfig({
       ]
     }, {      
         text: 'Escribir APIs',   // required
-        path: '/',      // optional, link of the title, which should be an absolute path and must exist
+        path: '/writing-apis/',      // optional, link of the title, which should be an absolute path and must exist
         sidebarDepth: 1,    // optional, defaults to 1
         collapsible: true,
         collapsed: true,
         items: [
           { text: 'Fundamentos de APIs JSON Tipo REST', link: '/writing-apis/the-basics-of-rest-like-json-apis' }
-        ]}
+        ]
+    }, {      
+      text: 'Ayudantes y Colecciones',   // required
+      path: '/helpers-and-collections/',      // optional, link of the title, which should be an absolute path and must exist
+      sidebarDepth: 1,    // optional, defaults to 1
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Ayudantes', link: '/helpers-and-collections/helpers' }
+      ]}
     ],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ecanquiz/laravel-up-running' }
     ]
   }
 })
+
 
 
 
