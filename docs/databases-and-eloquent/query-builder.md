@@ -136,3 +136,70 @@ $usersOfType = DB::table('users')
 Aquí, creamos nuestra consulta (tabla `users`, tipo `$type`) y luego ejecutamos la consulta y obtuvimos nuestro resultado. Tenga en cuenta que, a diferencia de las llamadas anteriores, esto devolverá una _colección_ de objetos `stdClass` en lugar de una matriz.
 
 >### Illuminate Collections
+
+>La fachada `DB`, al igual que Eloquent, devuelve una colección para cualquier método encadenado que devuelva (o pueda devolver) varias filas y una matriz para cualquier método no encadenado que devuelva (o pueda devolver) varias filas. La fachada `DB` devuelve una instancia de `Illuminate\Support\Collection` y Eloquent devuelve una instancia de `Illuminate\Database\Eloquent\Collection`, que extiende `Illuminate\Support\Collection` con algunos métodos específicos de Eloquent.
+
+>`Collection` es como una matriz PHP con superpoderes, que le permite ejecutar `map()`, `filter()`, `reduce()`, `each()` y mucho más en sus datos. Puede obtener más información sobre colecciones en la sección de [Ayudantes y Coleciones](../helpers-and-collections/helpers.html).
+
+Veamos qué métodos permite encadenar el generador de consultas. Los métodos se pueden dividir en lo que llamaré métodos de restricción, métodos de modificación, métodos condicionales y métodos de finalización/retorno.
+
+### Métodos de restricción
+
+Estos métodos toman la consulta tal como es y la restringen para devolver un subconjunto más pequeño de datos posibles:
+
+- `select()`: Le permite elegir qué columnas está seleccionando.
+```php
+$emails = DB::table('contacts')
+    ->select('email', 'email2 as second_email')
+    ->get();
+// Or
+$emails = DB::table('contacts')
+    ->select('email')
+    ->addSelect('email2 as second_email')
+    ->get();
+```
+
+- `where()`: Le permite limitar el alcance de lo que se devuelve utilizando `WHERE`. De forma predeterminada, la firma del método `where()` toma tres parámetros: la columna, el operador de comparación y el valor:
+```php
+$newContacts = DB::table('contact')
+    ->where('created_at', '>', now()->subDay())
+    ->get();
+```
+Sin embargo, si su comparación es `=`, que es la comparación más común, puede omitir el segundo operador.
+```php
+$vipContacts = DB::table('contacts')->where('vip',true)->get();
+```
+Si desea combinar declaraciones `where()`, puede encadenarlas una tras otra o pasar una matriz de matrices.
+```php
+$newVips = DB::table('contacts')
+    ->where('vip', true)
+    ->where('created_at', '>', now()->subDay());
+// Or
+$newVips = DB::table('contacts')->where([
+    ['vip', true],
+    ['created_at', '>', now()->subDay()],
+]);
+```
+
+- `orWhere()`: Crea declaraciones `OR WHERE` simples.
+```php
+$priorityContacts = DB::table('contacts')
+    ->where('vip', true)
+    ->orWhere('created_at', '>', now()->subDay())
+    ->get();
+```
+
+Para crear una declaración `OR WHERE` más compleja con múltiples condiciones, pase a `orWhere()` una clausura.
+```php
+$contacts = DB::table('contacts')
+    ->where('vip', true)
+    ->orWhere(function ($query) {
+        $query->where('created_at', '>', now()->subDay())
+            ->where('trial', false);
+    })
+    ->get();
+```
+
+>### Potential Confusion with Multiple where() and orWhere() Calls
+
+
