@@ -200,6 +200,82 @@ $contacts = DB::table('contacts')
     ->get();
 ```
 
->### Potential Confusion with Multiple where() and orWhere() Calls
+>### Posible Confusión con Múltiples Llamadas `where()` y `orWhere()`
+
+>Si estás usando llamadas `orWhere()` junto con múltiples llamadas `where()`, debes tener mucho cuidado para asegurarte de que la consulta esté haciendo lo que crees que debe hacer. Esto no se debe a ningún fallo de Laravel, sino a que una consulta como la siguiente podría no hacer lo que esperas:
+>```php
+>$canEdit = DB::table('users')
+>    ->where('admin', true)
+>    ->orWhere('plan', 'premium')
+>    ->where('is_plan_owner', true)
+>    ->get();
+>```
+>```sql
+>SELECT * FROM users
+>    WHERE admin = 1
+>    OR plan = 'premium'
+>    AND is_plan_owner = 1;
+>```
+>Si desea escribir SQL que diga “si esto O (esto y esto)”, que es claramente la intención en el ejemplo anterior, deberá pasar una clausura a la llamada `orWhere()`:
+>```php
+>$canEdit = DB::table('users')
+>    ->where('admin', true)
+>    ->orWhere(function ($query) {
+>        $query->where('plan', 'premium')
+>        ->where('is_plan_owner', true);
+>    })
+>    ->get();
+>```
+>```sql
+>SELECT * FROM users
+>WHERE admin = 1
+>OR (plan = 'premium' AND is_plan_owner = 1);
+>```
+
+- `whereBetween(colName, [low, high])`: Le permite limitar una consulta para devolver solo filas donde una columna está entre dos valores (incluidos los dos valores):
+```php
+$mediumDrinks = DB::table('drinks')
+    ->whereBetween('size', [6, 12])
+    ->get();
+```
+Lo mismo funciona para `whereNotBetween()`, pero seleccionará la inversa.
+
+- `whereIn(colName, [1, 2, 3])`: Le permite limitar una consulta para devolver solo filas donde un valor de columna está en una lista de opciones proporcionada explícitamente:
+```php
+$closeBy = DB::table('contacts')
+    ->whereIn('state', ['FL', 'GA', 'AL'])
+    ->get();
+```
+Lo mismo funciona para `whereNotIn()`, pero seleccionará lo inverso.
+
+- `whereNull(colName), whereNotNull(colName)`: Le permite seleccionar solo filas donde una columna determinada es `NULL` o es `NOT NULL`, respectivamente.
+
+- `whereRaw()`: Le permite pasar una cadena cruda, sin escape, para agregarla después de la declaración `WHERE`:
+```php
+$goofs = DB::table('contacts')->whereRaw('id = 12345')->get();
+```
+:::info ¡Cuidado con la Inyección SQL!
+No se escaparán las consultas SQL que se pasen a `whereRaw()`. Utilice este método con cuidado y con poca frecuencia; esta es una excelente oportunidad para que se produzcan ataques de inyección SQL en su aplicación.
+:::
+
+- `whereExists()`: Le permite seleccionar solo las filas que, cuando se pasan a una subconsulta proporcionada, devuelven al menos una fila. Imagine que solo desea obtener aquellos usuarios que hayan dejado al menos un comentario:
+```php
+$commenters = DB::table('users')
+    ->whereExists(function ($query) {
+        $query->select('id')
+            ->from('comments')
+            ->whereRaw('comments.user_id = users.id');
+    })
+    ->get();
+```
+
+- `distinct()`: Selecciona solo las filas en las que los datos seleccionados son únicos en comparación con las otras filas de los datos devueltos. Normalmente, esto se combina con `select()`, porque si se utiliza una clave principal, no habrá filas duplicadas:
+```php
+$lastNames = DB::table('contacts')->select('city')->distinct()->get();
+```
+
+### Modifying methods
+
+
 
 
