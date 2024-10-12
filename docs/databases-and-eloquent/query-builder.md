@@ -274,8 +274,35 @@ $commenters = DB::table('users')
 $lastNames = DB::table('contacts')->select('city')->distinct()->get();
 ```
 
-### Modifying methods
+### Métodos de modificación
 
+Estos métodos cambian la forma en que se mostrarán los resultados de la consulta, en lugar de simplemente limitar sus resultados:
 
+- `orderBy(colName, direction)`: Ordena los resultados. El segundo parámetro puede ser `asc` (el valor predeterminado, orden ascendente) o `desc` (orden descendente).
+```php
+$contacts = DB::table('contacts')
+    ->orderBy('last_name', 'asc')
+    ->get();
+```
+
+- `groupBy()`, `having()`, `havingRaw()`: Agrupa los resultados por una columna. Opcionalmente, `having()` y `havingRaw()` te permiten filtrar los resultados en función de las propiedades de los grupos. Por ejemplo, puedes buscar solo ciudades con al menos 30 habitantes.
+```php
+$populousCities = DB::table('contacts')
+    ->groupBy('city')
+    ->havingRaw('count(contact_id) > 30')
+    ->get();
+```
+
+- `skip()`, `take()`: Se utilizan con mayor frecuencia para la paginación y permiten definir cuántas filas devolver y cuántas omitir antes de comenzar la devolución — como un número de página y un tamaño de página en un sistema de paginación.
+```php
+// returns rows 31-40
+$page4 = DB::table('contacts')->skip(30)->take(10)->get();
+```
+
+- `latest(colName)`, `oldest(colName)`: Ordena por la columna pasada (o `created_at` si no se pasa ningún nombre de columna) en orden descendente (`latest()`) o ascendente (`oldest()`).
+
+- `inRandomOrder()`: Ordena el resultado aleatoriamente.
+
+### Conditional methods
 
 
