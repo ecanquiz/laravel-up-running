@@ -157,13 +157,13 @@ export default defineConfig({
       items: [
         { text: 'Ayudantes', link: '/helpers-and-collections/helpers' }
       ]
-  }
-    ],
+    }],
     socialLinks: [
       { icon: 'github', link: 'https://github.com/ecanquiz/laravel-up-running' }
     ]
   }
 })
+
 
 
 
