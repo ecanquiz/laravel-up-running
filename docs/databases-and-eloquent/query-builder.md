@@ -304,5 +304,3 @@ $page4 = DB::table('contacts')->skip(30)->take(10)->get();
 - `inRandomOrder()`: Ordena el resultado aleatoriamente.
 
 ### Conditional methods
-
-
