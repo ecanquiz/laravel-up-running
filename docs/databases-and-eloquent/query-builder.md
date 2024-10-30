@@ -117,6 +117,30 @@ $countDeleted = DB::delete(
     'delete from contacts where archived = ?',
     [true]
 );
-````
+```
 
-### Chaining with the Query Builder
+### Encadenamiento con el Generador de Consultas
+
+Hasta ahora, no hemos utilizado el generador de consultas en sí. Solo hemos utilizado llamadas de método simples en la fachada DB. Vamos a crear algunas consultas.
+
+El generador de consultas permite encadenar métodos para, como ya habrás adivinado, _generar una consulta_. Al final de tu cadena, usarás algún método (probablemente `get()`) para
+activar la ejecución real de la consulta que acabas de crear.
+
+Veamos un ejemplo rápido:
+```php
+$usersOfType = DB::table('users')
+    ->where('type', $type)
+    ->get();
+```
+
+Aquí, creamos nuestra consulta (tabla `users`, tipo `$type`) y luego ejecutamos la consulta y obtuvimos nuestro resultado. Tenga en cuenta que, a diferencia de las llamadas anteriores, esto devolverá una _colección_ de objetos `stdClass` en lugar de una matriz.
+
+>### Colecciones `Illuminate`
+
+>La fachada DB, como Eloquent, devuelve una colección para cualquier método encadenado que devuelva (o pueda devolver) múltiples filas y una matriz para cualquier método no encadenado que devuelva (o pueda devolver) múltiples filas. La fachada DB devuelve una instancia de `Illuminate\Support\Collection` y Eloquent devuelve una instancia de `Illuminate\Database\Eloquent\Collection`, que extiende `Illuminate\Support\Collection` con algunos métodos específicos de Eloquent.
+
+>Una colección es como una matriz PHP con superpoderes que te permite ejecutar `map()`, `filter()`, `reduce()`, `each()` y mucho más en tus datos. Puedes aprender más sobre colecciones en [Ayudantes y Collecciones](../helpers-and-collections/helpers.html).
+
+Veamos qué métodos permite encadenar el generador de consultas. Los métodos se pueden dividir en lo que llamaré métodos de restricción, métodos de modificación, métodos condicionales y métodos de finalización/retorno.
+
+#### Constraining methods
