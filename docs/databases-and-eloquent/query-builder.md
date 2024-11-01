@@ -303,4 +303,35 @@ $page4 = DB::table('contacts')->skip(30)->take(10)->get();
 
 - `inRandomOrder()`: Ordena el resultado aleatoriamente.
 
-### Conditional methods
+### Métodos condicionales
+
+Hay dos métodos que le permiten aplicar condicionalmente sus “contenidos” (una clausura que les pasa) según el estado booleano de un valor que pasa:
+
+- `when()`: Dado un primer parámetro verdadero, aplica la modificación de la consulta contenida en la clausura; dado un primer parámetro falso, no hace nada. Tenga en cuenta que el primer parámetro podría ser un valor booleano (por ejemplo, `$ignoreDrafts`, establecido en `true` o `false`), un valor opcional (`$status`, extraído de la entrada del usuario y con valor predeterminado `null`) o una clausura que devuelva cualquiera de los dos; lo que importa es que evalúe como verdadero o falso. Por ejemplo:
+
+```php
+$status = request('status'); // Defaults to null if not set
+
+$posts = DB::table('posts')
+    ->when($status, function ($query) use ($status) {
+        return $query->where('status', $status);
+    })
+    ->get();
+```
+
+```php
+// Or
+$posts = DB::table('posts')
+    ->when($ignoreDrafts, function ($query) {
+        return $query->where('draft', false);
+    })
+    ->get();
+```
+
+También puedes pasar un tercer parámetro, otra clausura, que se aplicará solo si el primer parámetro es falso.
+
+- `unless()`: la inversa exacta de `when()`. Si el primer parámetro es falso, se ejecutará la segunda clausura.
+
+
+### Ending/returning methods
+
