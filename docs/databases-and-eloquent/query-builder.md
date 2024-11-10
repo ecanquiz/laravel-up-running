@@ -333,5 +333,87 @@ También puedes pasar un tercer parámetro, otra clausura, que se aplicará solo
 - `unless()`: la inversa exacta de `when()`. Si el primer parámetro es falso, se ejecutará la segunda clausura.
 
 
-### Ending/returning methods
+### Métodos de finalización/retorno
 
+Estos métodos detienen la cadena de consultas y activan la ejecución de la consulta SQL. Sin uno de estos métodos al final de la cadena de consultas, su retorno siempre será solo una instancia del generador de consultas; encadene uno de estos métodos a un generador de consultas y obtendrá un resultado:
+
+- `get()`: Obtiene todos los resultados de la consulta creada:
+```php
+$contacts = DB::table('contacts')->get();
+$vipContacts = DB::table('contacts')->where('vip', true)->get();
+```
+
+- `first()`, `firstOrFail()`: Obtiene solo el primer resultado, como `get()`, pero con un `LIMIT 1` agregado:
+```php
+$newestContact = DB::table('contacts')
+    ->orderBy('created_at', 'desc')
+    ->first();
+```
+`first()` falla silenciosamente si no hay resultados, mientras que `firstOrFail()` lanzará una excepción.
+
+Si pasa una matriz de nombres de columnas a cualquiera de los métodos, devolverá los datos solo de esas columnas en lugar de todas las columnas.
+
+- `find(id)`, `findOrFail(id)`: Al igual que `first()`, pero se pasa un valor ID que corresponde a la clave principal a buscar. `find()` falla silenciosamente si no existe una fila con ese ID, mientras que `findOrFail()` lanza una excepción:
+```php
+$contactFive = DB::table('contacts')->find(5);
+```
+
+- `value()`: Extrae solo el valor de un único campo de la primera fila. Como `first()`, pero si solo quieres una única columna:
+```php
+$newestContactEmail = DB::table('contacts')
+    ->orderBy('created_at', 'desc')
+    ->value('email');
+```
+
+- `count()`: Devuelve un recuento entero de todos los resultados coincidentes:
+```php
+$countVips = DB::table('contacts')
+    ->where('vip', true)
+    ->count();
+```
+
+- `min()`, `max()`: Devuelve el valor mínimo o máximo de una columna particular:
+```php
+$highestCost = DB::table('orders')->max('amount');
+```
+
+- `sum()`, `avg()`: Devuelve la suma o el promedio de todos los valores en una columna particular:
+```php
+$averageCost = DB::table('orders')
+   ->where('status', 'completed')
+   ->avg('amount');
+```
+
+- `dd()`, `dump()`: Vuelca la consulta SQL subyacente y los enlaces y, si se usa `dd()`, finaliza el script.
+```php
+DB::table('users')->where('name', 'Wilbur Powery')->dd();
+
+// "select * from `users` where `name` = ?"
+// array:1 [ 0 => "Wilbur Powery"]
+```
+
+:::info Explicar el método
+El método `explain()` devuelve una explicación de cómo SQL ejecutará la consulta. Puede usarlo junto con los métodos `dd()` o `dump()` para depurar su consulta:
+```php
+User::where('name', 'Wilbur Powery')->explain()->dd();
+
+/*
+array:1 [
+    0 => {#5111
+        +"id": 1
+        +"select_type": "SIMPLE"
+        +"table": "users"
+        +"type": "ALL"
+        +"possible_keys": null
+        +"key": null
+        +"key_len": null
+        +"ref": null
+        +"rows": "209"
+        +"Extra": "Using where"
+    }
+]
+*/
+```
+:::
+
+### Writing raw queries inside query builder methods with DB::raw
