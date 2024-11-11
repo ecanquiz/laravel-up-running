@@ -86,7 +86,8 @@ export default defineConfig({
         { text: 'Migraciones', link: '/databases-and-eloquent/migrations' },
         { text: 'Inspeccionar su Base de Datos', link: '/databases-and-eloquent/inspecting-your-database' },
         { text: 'Siembras', link: '/databases-and-eloquent/seeding' },
-        { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },        
+        { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },
+        { text: 'Introducción a Eloquent', link: '/databases-and-eloquent/introduction-to-eloquent' }
       ]
     }, {
       text: 'Recopilación y Manejo de Datos de Usuario',   // required
