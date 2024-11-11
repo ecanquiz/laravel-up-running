@@ -416,4 +416,156 @@ array:1 [
 ```
 :::
 
-### Writing raw queries inside query builder methods with DB::raw
+### Escribir consultas sin procesar dentro de métodos del generador de consultas con `DB::raw`
+
+Ya ha visto algunos métodos personalizados para declaraciones `raw` — por ejemplo, `select()` tiene una contraparte `selectRaw()` que le permite pasar una cadena para que el generador de consultas la coloque después de la declaración `WHERE`.
+
+Sin embargo, también puedes pasar el resultado de una llamada `DB::raw()` a casi cualquier método en el generador de consultas para lograr el mismo resultado:
+```php
+$contacts = DB::table('contacts')
+    ->select(DB::raw('*, (score * 100) AS integer_score'))
+    ->get();
+```
+
+### Joins
+
+A veces, definir uniones puede ser complicado y un framework solo puede hacer lo que puede para simplificarlas, pero el generador de consultas hace todo lo posible. Veamos un ejemplo:
+```php
+$users = DB::table('users')
+    ->join('contacts', 'users.id', '=', 'contacts.user_id')
+    ->select('users.*', 'contacts.name', 'contacts.status')
+    ->get();
+```
+
+El método `join()` crea una unión interna. También puedes encadenar varias uniones una tras otra o usar `leftJoin()` para obtener una unión izquierda.
+
+Finalmente, puedes crear uniones más complejas pasando una clausura al método `join()`:
+```php
+DB::table('users')
+    ->join('contacts', function ($join) {
+        $join
+            ->on('users.id', '=', 'contacts.user_id')
+            ->orOn('users.id', '=', 'contacts.proxy_user_id');
+    })
+    ->get();
+```
+
+### Unions
+
+Puede unir dos consultas (unir sus resultados en un conjunto de resultados) creándolas primero y luego utilizando el método `union()` o `unionAll()`:
+```php
+$first = DB::table('contacts')
+    ->whereNull('first_name');
+
+$contacts = DB::table('contacts')
+    ->whereNull('last_name')
+    ->union($first)
+    ->get();
+```
+
+### Inserts
+
+El método `insert()` es bastante simple. Páselo como una matriz para insertar una sola fila o como una matriz de matrices para insertar varias filas y use `insertGetId()` en lugar de `insert()` para obtener el ID de la clave principal que se incrementa automáticamente como un valor de retorno:
+```php
+$id = DB::table('contacts')->insertGetId([
+    'name' => 'Abe Thomas',
+    'email' => 'athomas1987@gmail.com',
+]);
+
+DB::table('contacts')->insert([
+    ['name' => 'Tamika Johnson', 'email' => 'tamikaj@gmail.com'],
+    ['name' => 'Jim Patterson', 'email' => 'james.patterson@hotmail.com'],
+]);
+```
+
+### Updates
+
+Las actualizaciones también son sencillas. Cree su consulta de actualización y, en lugar de `get()` o `first()`, utilice `update()` y pásele una matriz de parámetros:
+```php
+DB::table('contacts')
+    ->where('points', '>', 100)
+    ->update(['status' => 'vip']);
+```
+
+También puede incrementar y decrementar rápidamente columnas utilizando los métodos `increment()` y `decrement()`. El primer parámetro de cada uno es el nombre de la columna y el segundo parámetro (opcional) es el número por el que se incrementará o decrementará:
+```php
+DB::table('contacts')->increment('tokens', 5);
+DB::table('contacts')->decrement('tokens');
+```
+
+### Deletes
+
+Las eliminaciones son aún más sencillas. Cree su consulta y luego finalícela con `delete()`:
+```php
+DB::table('users')
+    ->where('last_login', '<', now()->subYear())
+    ->delete();
+```
+
+También puede truncar la tabla, lo que elimina todas las filas y también restablece el ID de incremento automático:
+```php
+DB::table('contacts')->truncate();
+```
+
+### Operaciones JSON
+
+Si tiene columnas JSON, puede actualizar o seleccionar filas según aspectos de la estructura JSON utilizando la sintaxis de flecha para recorrer los elementos secundarios:
+```php
+// Select all records where the "isAdmin" property of the "options"
+// JSON column is set to true
+DB::table('users')->where('options->isAdmin', true)->get();
+
+// Update all records, setting the "verified" property
+// of the "options" JSON column to true
+DB::table('users')->update(['options->isVerified', true]);
+```
+
+## Transacciones
+
+Las _transacciones de base de datos_ son herramientas que permiten finalizar una serie de consultas de base de datos que se realizarán en un lote, y que se pueden revertir, deshaciendo así toda la serie de consultas. Las transacciones se utilizan a menudo para garantizar que se realicen _todas_ o ninguna, pero no algunas, de una serie de consultas relacionadas — si una falla, el ORM revertirá toda la serie de consultas.
+
+Con la función de transacciones del generador de consultas de Laravel, si se lanza alguna excepción en cualquier momento durante el cierre de la transacción, se revertirán todas las consultas de la transacción. Si la clausura de la transacción finaliza correctamente, se confirmarán todas las consultas y no se revertirán.
+
+Echemos un vistazo a la transacción de muestra en el ejemplo siguiente.
+
+_Una transacción de base de datos simple_
+```php
+DB::transaction(function () use ($userId, $numVotes) {
+    // Possibly failing DB query
+    DB::table('users')
+        ->where('id', $userId)
+        ->update(['votes' => $numVotes]);
+
+    // Caching query that we don't want to run if the above query fails
+    DB::table('votes')
+        ->where('user_id', $userId)
+        ->delete();
+});
+```
+
+En este ejemplo, podemos suponer que teníamos algún proceso previo que resumía la cantidad de votos de la tabla `votes` para un usuario determinado. Queremos almacenar en caché esa cantidad en la tabla `users` y luego borrar esos votos de la tabla `votes`. Pero, por supuesto, no queremos borrar los votos hasta que la actualización de la tabla `users` se haya ejecutado correctamente. Y no queremos mantener la cantidad actualizada de votos en la tabla `users` si falla la eliminación de la tabla `votes`.
+
+Si algo sale mal con una de las consultas, la otra no se aplicará. Esa es la magia de las transacciones de bases de datos.
+
+Tenga en cuenta que también puede iniciar y finalizar transacciones manualmente — y esto se aplica tanto a las consultas del generador de consultas como a las consultas de Eloquent. Comience con `DB::beginTransaction()`, finalice con `DB::commit()` y cancele con `DB::rollBack()`:
+
+```php
+DB::beginTransaction();
+
+// Take database actions
+
+if ($badThingsHappened) {
+    DB::rollBack();
+}
+
+// Take other database actions
+DB::commit();
+```
+
+
+
+
+
+
+
+
