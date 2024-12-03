@@ -58,6 +58,79 @@ public function vips()
 
 Veamos cómo trabajamos con los modelos Eloquent.
 
-## Creating and Defining Eloquent Models
+## Creando y Definiendo Modelos Elocuentes
+
+Primero, vamos a crear un modelo. Hay un comando Artisan para eso:
+
+```sh
+php artisan make:model Contact
+```
+
+Esto es lo que obtendremos en `app/Models/Contact.php`:
+
+```php
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Contact extends Model
+{
+    //
+}
+```
+
+:::info Creando una Migración Junto con Su Modelo
+Si desea crear automáticamente una migración cuando crea
+su modelo, pase el indicador `-m` o `--migration`:
+```sh
+php artisan make:model Contact --migration
+```
+:::
 
 
+### Nombre de la tabla
+
+El comportamiento predeterminado para los nombres de tabla es que Laravel convierte en "snake cases" y pluraliza el nombre de la clase, por lo que `SecondaryContact` accedería a una tabla llamada `secondary_contacts`. Si desea personalizar el nombre, configure la propiedad `$table` explícitamente en el modelo:
+
+```php
+protected $table = 'contacts_secondary';
+```
+
+### Clave primaria
+
+Laravel asume, por defecto, que cada tabla tendrá una clave primaria de número entero que se incrementa automáticamente y se llamará `id`.
+
+Si quieres cambiar el nombre de tu clave primaria, cambia la propiedad `$primaryKey`:
+
+```php
+protected $primaryKey = 'contact_id';
+```
+
+Y si quieres configurarlo para que no se incremente, utiliza:
+
+```php
+public $incrementing = false;
+```
+
+>### Impresión de un Resumen de un Modelo Elocuente
+
+>A medida que su proyecto crece, puede resultar un poco complicado realizar un seguimiento de la definición, los atributos y las relaciones de cada modelo. El comando `model:show` puede ayudarle con esto al ofrecerle un resumen de su modelo e imprimir los nombres de las bases de datos y las tablas. También enumera los atributos junto con los modificadores de columna SQL, el tipo y el tamaño; enumera los mutadores junto con los atributos; enumera todas las relaciones del modelo; y enumera los observadores del modelo.
+
+### Marcas de tiempo
+
+Eloquent espera que cada tabla tenga las columnas de marca de tiempo `created_at` y `updated_at`. Si su tabla no las necesita, deshabilite la funcionalidad `$timestamps`:
+
+```php
+public $timestamps = false;
+```
+
+Puede personalizar el formato que utiliza Eloquent para almacenar sus marcas de tiempo en la base de datos configurando la propiedad de clase `$dateFormat` en una cadena personalizada. La cadena se analizará utilizando la sintaxis `date()` de PHP, por lo que el siguiente ejemplo almacenará la fecha como segundos desde la época de Unix:
+
+
+```php
+protected $dateFormat = 'U';
+```
+
+## Retrieving Data with Eloquent
