@@ -133,4 +133,108 @@ Puede personalizar el formato que utiliza Eloquent para almacenar sus marcas de 
 protected $dateFormat = 'U';
 ```
 
-## Retrieving Data with Eloquent
+## Recuperación de Datos con Eloquent
+
+La mayoría de las veces, cuando extraes datos de tu base de datos con Eloquent, utilizarás llamadas estáticas en tu modelo Eloquent.
+
+Comencemos por obtener todo:
+
+
+```php
+$allContacts = Contact::all();
+```
+
+Eso fue fácil. Vamos a filtrarlo un poco:
+
+```php
+$vipContacts = Contact::where('vip', true)->get();
+```
+
+Podemos ver que la fachada `Eloquent` nos da la capacidad de encadenar restricciones, y a partir de allí las restricciones se vuelven muy familiares:
+
+```php
+$newestContacts = Contact::orderBy('created_at', 'desc')
+    ->take(10)
+    ->get();
+```
+
+Resulta que una vez que pasas del nombre de la fachada inicial, solo estás trabajando con el generador de consultas de Laravel. Puedes hacer mucho más (lo abordaremos pronto), pero todo lo que puedes hacer con el generador de consultas en la fachada `DB`, también puedes hacerlo en tus objetos Eloquent.
+
+### Obtener uno
+
+Como ya hemos explicado antes en este capítulo, puedes usar `first()` para devolver solo el primer registro de una consulta, o usar `find()` para extraer solo el registro con el ID proporcionado. En ambos casos, si añades "OrFail" al nombre del método, se generará una excepción si no hay resultados coincidentes. Esto hace que `findOrFail()` sea una herramienta común para buscar una entidad por un segmento de URL (o generar una excepción si no existe una entidad coincidente), como puedes ver en el ejemplo siguiente.
+
+_Uso de un método `OrFail()` de Eloquent en un método de controlador_
+```php
+// ContactController
+public function show($contactId)
+{
+    return view('contacts.show')
+        ->with('contact', Contact::findOrFail($contactId));
+}
+```
+
+:::info Excepciones
+Como puede ver en el ejemplo anterior, no necesitamos capturar la excepción de modelo no encontrado de Eloquent (`Illuminate\Database\Eloquent\ModelNotFoundException`) en nuestros controladores; el sistema de enrutamiento de Laravel la capturará y arrojará un error 404 por nosotros.
+
+Por supuesto, puede capturar esa excepción en particular y manejarla, si lo desea.
+:::
+
+Cualquier método que tenga como objetivo devolver un único registro (`first()`, `firstOrFail()`, `find()` o `findOrFail()`) devolverá una instancia de la clase Eloquent. Por lo tanto, `Contact::first()` devolverá una instancia de la clase `Contact` con los datos de la primera fila de la tabla completándola.
+
+También puedes utilizar el método `firstWhere()`, que es un atajo que combina `where()` y `first()`:
+
+```php
+// With where() and first()
+Contact::where('name', 'Wilbur Powery')->first();
+```
+```php
+// With firstWhere()
+Contact::firstWhere('name', 'Wilbur Powery');
+```
+
+### Obtener muchos
+
+`get()` funciona con Eloquent tal como lo hace en las llamadas normales del generador de consultas — crea una consulta y llama a `get()` al final para obtener los resultados:
+
+```php
+$vipContacts = Contact::where('vip', true)->get();
+```
+
+Sin embargo, hay un método exclusivo de Eloquent, `all()`, que verás que a menudo la gente usa cuando quiere obtener una lista sin filtrar de todos los datos de la tabla:
+
+```php
+$contacts = Contact::all();
+```
+
+:::info Usando `get()` en lugar de `all()`
+Siempre que puedas usar `all()`, puedes usar `get()`. `Contact::get()` tiene la misma respuesta que `Contact::all()`. Sin embargo, en el momento en que comiences a modificar tu consulta (agregando un filtro `where()`, por ejemplo) — `all()` dejará de funcionar, pero `get()` seguirá funcionando.
+
+Entonces, aunque `all()` es muy común, recomendaría usar `get()` para todo e ignorar el hecho de que `all()` incluso existe.
+:::
+
+### Fragmentación de respuestas con `chunk()`
+
+Si alguna vez ha tenido que procesar una gran cantidad (miles o más) de registros a la vez, es posible que haya tenido problemas de memoria o de bloqueo. Laravel permite dividir sus solicitudes en partes más pequeñas (fragmentos) y procesarlas en lotes, manteniendo más pequeña la carga de memoria de su solicitud grande. El ejemplo siguiente ilustra el uso de `chunk()` para dividir una consulta en "fragmentos" de 100 registros cada uno.
+
+_Fragmentación de una consulta Eloquent para limitar el uso de memoria_
+```php
+Contact::chunk(100, function ($contacts) {
+    foreach ($contacts as $contact) {
+        // Do something with $contact
+    }
+});
+```
+
+### Agregados
+
+Los agregados que están disponibles en el generador de consultas también están disponibles en las consultas de Eloquent. Por ejemplo:
+
+```php
+$countVips = Contact::where('vip', true)->count();
+$sumVotes = Contact::sum('votes');
+$averageSkill = User::avg('skill_level');
+```
+
+## Inserts and Updates with Eloquent
+
