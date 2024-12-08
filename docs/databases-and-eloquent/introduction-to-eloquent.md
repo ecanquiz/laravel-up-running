@@ -236,5 +236,56 @@ $sumVotes = Contact::sum('votes');
 $averageSkill = User::avg('skill_level');
 ```
 
-## Inserts and Updates with Eloquent
+## Inserciones y Actualizaciones con Eloquent
 
+La inserción y actualización de valores es uno de los lugares donde Eloquent comienza a desviarse de la sintaxis normal del generador de consultas.
+
+### Inserciones
+
+Existen dos formas principales de insertar un nuevo registro con Eloquent. Primero, puede crear una nueva instancia de su clase Eloquent, configurar sus propiedades manualmente y llamar a `save()` en esa instancia, como en el ejemplo siguiente.
+
+_Inserción de un registro Eloquent mediante la creación de una nueva instancia_
+```php
+$contact = new Contact;
+$contact->name = 'Ken Hirata';
+$contact->email = 'ken@hirata.com';
+$contact->save();
+
+// or
+
+$contact = new Contact([
+    'name' => 'Ken Hirata',
+    'email' => 'ken@hirata.com',
+]);
+$contact->save();
+
+// or
+
+$contact = Contact::make([
+   'name' => 'Ken Hirata',
+   'email' => 'ken@hirata.com',
+]);
+$contact->save();
+```
+
+Hasta que guarde la operación `save()`, esta instancia de `Contact` representa el contacto por completo — excepto que nunca se guardó en la base de datos. Eso significa que no tiene un `id`, no persistirá si la aplicación se cierra y no tiene sus valores `created_at` y `updated_at` configurados
+
+También puedes pasar una matriz a `Model::create()`, como se muestra en el siguiente ejemplo. A diferencia de `make()`, `create()` guarda la instancia en la base de datos tan pronto como se la llama.
+
+_Insertar un registro Eloquent pasando una matriz a `create()`_
+```php
+$contact = Contact::create([
+    'name' => 'Keahi Hale',
+    'email' => 'halek481@yahoo.com',
+]);
+```
+
+También tenga en cuenta que en cualquier contexto en el que pase una matriz (a `new Model()`, `Model::make()`, `Model::create()` o `Model::update()`), cada propiedad que configure a través de `Model::create()` debe ser aprobada para la "asignación masiva", que cubriremos en breve. Esto no es necesario con el primer ejemplo, donde asigna cada propiedad individualmente.
+
+Tenga en cuenta que si está usando `Model::create()`, no necesita `save()` la instancia; eso se maneja como parte del método `create()` del modelo.
+
+### Updates
+
+Updating records looks very similar to inserting. You can get a specific instance,
+change its properties, and then save, or you can make a single call and pass an array
+of updated properties. Example 5-24 illustrates the first approach.
