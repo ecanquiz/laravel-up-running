@@ -284,8 +284,34 @@ También tenga en cuenta que en cualquier contexto en el que pase una matriz (a 
 
 Tenga en cuenta que si está usando `Model::create()`, no necesita `save()` la instancia; eso se maneja como parte del método `create()` del modelo.
 
-### Updates
+### Actualizaciones
 
-Updating records looks very similar to inserting. You can get a specific instance,
-change its properties, and then save, or you can make a single call and pass an array
-of updated properties. Example 5-24 illustrates the first approach.
+La actualización de registros es muy similar a la inserción. Puede obtener una instancia específica, cambiar sus propiedades y luego guardarla, o puede realizar una única llamada y pasar una matriz de propiedades actualizadas. El ejemplo siguiente ilustra el primer enfoque.
+
+_Actualizar un registro de Eloquent actualizando una instancia y guardándola_
+```php
+$contact = Contact::find(1);
+$contact->email = 'natalie@parkfamily.com';
+$contact->save();
+```
+
+Dado que este registro ya existe, ya tendrá una marca de tiempo `created_at` y un `id`, que permanecerán iguales, pero el campo `updated_at` se cambiará a la fecha y hora actuales. El ejemplo siguiente ilustra el segundo enfoque.
+
+_Actualización de uno o más registros de Eloquent pasando una matriz al método `update()`_
+```php
+Contact::where('created_at', '<', now()->subYear())
+    ->update(['longevity' => 'ancient']);
+
+// or
+
+$contact = Contact::find(1);
+$contact->update(['longevity' => 'ancient']);
+```
+
+Este método espera una matriz donde cada clave es el nombre de la columna y cada valor es el valor de la columna.
+
+### Mass assignment
+
+We’ve looked at a few examples of how to pass arrays of values into Eloquent class
+methods. However, none of these will actually work until you define which fields are
+“fillable” on the model
