@@ -310,8 +310,61 @@ $contact->update(['longevity' => 'ancient']);
 
 Este método espera una matriz donde cada clave es el nombre de la columna y cada valor es el valor de la columna.
 
-### Mass assignment
+### Asignación masiva
 
-We’ve looked at a few examples of how to pass arrays of values into Eloquent class
-methods. However, none of these will actually work until you define which fields are
-“fillable” on the model
+Hemos visto algunos ejemplos de cómo pasar matrices de valores a los métodos de clase de Eloquent. Sin embargo, ninguno de ellos funcionará hasta que definas qué campos se pueden "rellenar" en el modelo.
+
+El objetivo de esto es protegerlo de entradas de usuarios (posiblemente maliciosas) que establezcan valores nuevos por accidente en campos que no desea cambiar. Considere el escenario común del ejemplo siguiente.
+
+_Actualización de un modelo Eloquent utilizando la totalidad de la entrada de una solicitud_
+```php
+// ContactController
+public function update(Contact $contact, Request $request)
+{
+    $contact->update($request->all());
+}
+```
+
+El objeto `Request` de Illuminate en el ejemplo anterior tomará cada dato ingresado por el usuario y lo pasará al método `update()`. Ese método `all()` incluye cosas como parámetros de URL y entradas de formulario, por lo que un usuario malintencionado podría agregar fácilmente algunas cosas allí, como `id` y `owner_id`, que probablemente no desee que se actualicen.
+
+Afortunadamente, eso no funcionará hasta que definas los campos rellenables de tu modelo. Puedes definir los “campos rellenables permitidos” o los “campos _protegidos_ no permitidos” para determinar qué campos se pueden o no editar mediante una _asignación_ masiva — es decir, pasando una matriz de valores a `create()` o `update()`. Ten en cuenta que las propiedades no rellenables aún se pueden cambiar mediante una asignación directa (por ejemplo, `$contact->password = 'abc';`). El ejemplo siguiente muestra ambos enfoques.
+
+_Uso de propiedades rellenables o protegidas de Eloquent para definir campos asignables en masa_
+```php
+class Contact extends Model
+{
+    protected $fillable = ['name', 'email'];
+
+    // or
+
+    protected $guarded = ['id', 'created_at', 'updated_at', 'owner_id'];
+}
+```
+
+:::info Uso de `Request::only()` con Eloquent Asignación Masiva
+En el primer ejemplo, necesitábamos la protección de asignación masiva de Eloquent porque estábamos usando el método `all()` en el objeto `Request` para pasar la _totalidad_ de la entrada del usuario.
+
+La protección de asignación masiva de Eloquent es una gran herramienta en este caso, pero también hay un truco útil para evitar que aceptes cualquier entrada anterior del usuario.
+
+La clase `Request` tiene un método `only()` que te permite extraer solo algunas claves de la entrada del usuario. Ahora puedes hacer esto:
+```php
+Contact::create($request->only('name', 'email'));
+```
+:::
+
+### `firstOrCreate()` y `firstOrNew()`
+
+A veces, desea decirle a su aplicación: “Consígame una instancia con estas propiedades o, si no existe, créela”. Aquí es donde entran en juego los métodos `firstOr*()`.
+
+Los métodos `firstOrCreate()` y `firstOrNew()` toman una matriz de claves y valores como su primer parámetro:
+
+```php
+$contact = Contact::firstOrCreate(['email' => 'luis.ramos@myacme.com']);
+```
+
+Ambos buscarán y recuperarán el primer registro que coincida con esos parámetros y, si no hay registros coincidentes, crearán una instancia con esas propiedades; `firstOrCreate()` conservará esa instancia en la base de datos y luego la devolverá, mientras que `firstOrNew()` la devolverá sin guardarla.
+
+Si pasa una matriz de valores como segundo parámetro, esos valores se agregarán a la entrada creada (si se crea) pero _no se_ usarán para buscar si la entrada existe.
+
+## Deleting with Eloquent
+
