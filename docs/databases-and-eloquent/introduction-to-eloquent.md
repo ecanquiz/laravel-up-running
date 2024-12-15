@@ -366,5 +366,123 @@ Ambos buscarán y recuperarán el primer registro que coincida con esos parámet
 
 Si pasa una matriz de valores como segundo parámetro, esos valores se agregarán a la entrada creada (si se crea) pero _no se_ usarán para buscar si la entrada existe.
 
-## Deleting with Eloquent
+## Eliminar con Eloquent
+
+Eliminar con Eloquent es muy similar a actualizar con Eloquent, pero con eliminaciones suaves (opcionales), puede archivar los elementos eliminados para inspeccionarlos más tarde o incluso recuperarlos.
+
+### Eliminaciones normales
+
+La forma más sencilla de eliminar un registro de modelo es llamar al método `delete()` en la propia instancia:
+
+```php
+$contact = Contact::find(5);
+$contact->delete();
+```
+
+Sin embargo, si solo tiene el ID, no hay razón para buscar una instancia solo para eliminarla; puede pasar un ID o una matriz de ID al método `destroy()` del modelo para eliminarlos directamente:
+
+```php
+Contact::destroy(1);
+// or
+Contact::destroy([1, 5, 7]);
+```
+
+Por último, puedes eliminar todos los resultados de una consulta:
+
+```php
+Contact::where('updated_at', '<', now()->subYear())->delete();
+```
+
+### Eliminaciones suaves
+
+Las _eliminaciones suaves_ marcan las filas de la base de datos como eliminadas sin eliminarlas realmente de la base de datos. Esto le permite inspeccionarlas más tarde, tener registros que muestren más que "sin información, eliminado" al mostrar información histórica y permitir que sus usuarios (o administradores) restauren algunos o todos los datos.
+
+La parte difícil de codificar manualmente una aplicación con eliminaciones suaves es que _cada consulta_ que escriba deberá excluir los datos eliminados. Afortunadamente, si usa las eliminaciones suaves de Eloquent, cada consulta que realice tendrá el alcance para ignorar las eliminaciones suaves de manera predeterminada, a menos que solicite explícitamente recuperarlas.
+
+La función de eliminación suave de Eloquent requiere que se agregue una columna `deleted_at` a la tabla. Una vez que habilite las eliminaciones suaves en ese modelo de Eloquent, todas las consultas que escriba (a menos que incluya explícitamente registros eliminados suavemente) tendrán un alcance que ignorará las filas eliminadas suavemente.
+
+>### ¿Cuándo Debo Usar Eliminaciones Suaves?
+
+>El hecho de que exista una característica no significa que deba usarla siempre. Muchas personas en la comunidad de Laravel usan por defecto eliminaciones suaves en cada proyecto solo porque la característica está ahí. Sin embargo, las eliminaciones suaves tienen costos reales. Es bastante probable que, si ve su base de datos directamente en una herramienta como Sequel Pro, se olvide de verificar la columna `delete_at` al menos una vez. Y si no limpia los registros antiguos eliminados de forma suave, sus bases de datos serán cada vez más grandes.
+
+>Mi recomendación es la siguiente: no utilices las eliminaciones suaves de forma predeterminada. En su lugar, úsalas cuando las necesites y, cuando las necesites, limpia las eliminaciones suaves antiguas con la mayor intensidad posible utilizando una herramienta como [Quicksand](https://github.com/tighten/quicksand). La función de eliminación suave es una herramienta potente, pero no vale la pena usarla a menos que la necesites.
+
+### Habilitar eliminaciones suaves
+
+Puede habilitar las eliminaciones suaves haciendo dos cosas: agregando la columna `deleted_at` en una migración e importando el atributo `SoftDeletes` en el modelo. Hay un método `softDeletes()` disponible en el generador de esquemas para agregar la columna `deleted_at` a una tabla, como puede ver en el ejemplo siguiente. 
+
+_Migración para agregar la columna de eliminación suave a una tabla_
+```php
+Schema::table('contacts', function (Blueprint $table) {
+    $table->softDeletes();
+});
+```
+
+El ejemplo siguiente muestra un modelo Eloquent con eliminaciones suaves habilitadas.
+
+_Un modelo Eloquent con eliminaciones suaves habilitadas_
+```php
+<?php
+
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class Contact extends Model
+{
+    use SoftDeletes; // use the trait
+}
+```
+
+Una vez que realice estos cambios, cada llamada `delete()` y `destroy()` establecerá la columna `deleted_at` en su fila como la fecha y hora actuales en lugar de eliminar esa fila. Y todas las consultas futuras excluirán esa fila como resultado.
+
+### Consultas con eliminaciones suaves
+
+Entonces, ¿cómo obtenemos los elementos eliminados suavemente?
+
+En primer lugar, puede agregar elementos eliminados suavemente a una consulta:
+
+```php
+$allHistoricContacts = Contact::withTrashed()->get();
+```
+
+A continuación, puede utilizar el método `trashed()` para ver si se ha eliminado suavemente una instancia particular:
+
+```php
+if ($contact->trashed()) {
+// do something
+}
+```
+
+Finalmente, puedes obtener _solo_ elementos eliminados suavemente:
+
+```php
+$deletedContacts = Contact::onlyTrashed()->get();
+```
+
+### Restauración de entidades eliminadas suavemente
+
+
+Si desea restaurar un elemento eliminado suavemente, puede ejecutar `restore()` en una instancia o una consulta:
+
+```php
+$contact->restore();
+
+// or
+
+Contact::onlyTrashed()->where('vip', true)->restore();
+```
+
+### Eliminación forzada de entidades eliminadas suavemente
+
+Puede eliminar una entidad eliminada suavemente llamando a `forceDelete()` en una entidad o consulta:
+
+```php
+$contact->forceDelete();
+
+// or
+
+Contact::onlyTrashed()->forceDelete();
+```
+
+## Scopes
 
