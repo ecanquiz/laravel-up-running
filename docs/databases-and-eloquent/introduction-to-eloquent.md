@@ -484,5 +484,11 @@ $contact->forceDelete();
 Contact::onlyTrashed()->forceDelete();
 ```
 
-## Scopes
+## Alcances
+
+Hemos hablado de consultas "filtradas", es decir, cualquier consulta en la que no se devuelvan todos los resultados de una tabla. Sin embargo, cada vez que las hemos escrito hasta ahora en este capítulo, ha sido un proceso manual utilizando el generador de consultas.
+
+Los alcances locales y globales en Eloquent le permiten definir _alcances_ prediseñados (filtros) que puede usar cada vez que se consulta un modelo (global) o cada vez que lo consulta con una cadena de métodos particular (local).
+
+### Local scopes
 
