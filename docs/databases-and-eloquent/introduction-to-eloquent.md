@@ -490,5 +490,150 @@ Hemos hablado de consultas "filtradas", es decir, cualquier consulta en la que n
 
 Los alcances locales y globales en Eloquent le permiten definir _alcances_ prediseñados (filtros) que puede usar cada vez que se consulta un modelo (global) o cada vez que lo consulta con una cadena de métodos particular (local).
 
-### Local scopes
+### Alcances locales
+
+Los alcances locales son los más sencillos de entender. Tomemos este ejemplo:
+
+```php
+$activeVips = Contact::where('vip', true)->where('trial', false)->get();
+```
+
+En primer lugar, si escribimos esta combinación de métodos de consulta una y otra vez, se volverá tedioso. Pero además, el _conocimiento_ de cómo definir a alguien como un "activeVIP" ahora está distribuido en nuestra aplicación. Queremos centralizar ese conocimiento. ¿Qué pasaría si pudiéramos escribir esto?
+
+```php
+$activeVips = Contact::activeVips()->get();
+```
+
+Podemos hacerlo — se llama alcance local y es fácil de definir en la clase `Contact`, como puede ver en el ejemplo siguiente.
+
+_Definición de un alcance local en un modelo_
+```php
+class Contact extends Model
+{
+    public function scopeActiveVips($query)
+    {
+        return $query->where('vip', true)->where('trial', false);
+    }
+```
+
+Para definir un alcance local, agregamos un método a la clase Eloquent que comienza con “scope” y luego contiene la versión en mayúsculas y minúsculas del nombre del ámbito. A este método se le pasa un generador de consultas y debe devolver un generador de consultas, pero, por supuesto, puede modificar la consulta antes de devolverla; ese es el objetivo.
+
+También puede definir alcances que acepten parámetros, como se muestra en el ejemplo siguiente.
+
+_Pasando parámetros a los alcances_
+```php
+class Contact extends Model
+{
+    public function scopeStatus($query, $status)
+    {
+        return $query->where('status', $status);
+    }
+```
+
+Y los usas de la misma manera, simplemente pasando el parámetro al alcance:
+
+```php
+$friends = Contact::status('friend')->get();
+```
+
+También puedes encadenar `orWhere()` entre dos alcances locales.
+
+```php
+$activeOrVips = Contact::active()->orWhere()->vip()->get();
+```
+
+### Alcances globales
+
+¿Recuerdas que hablamos de que las eliminaciones suaves solo funcionan si defines el alcance de _todas las consultas_ en el modelo para ignorar los elementos eliminados suavemente? Ese es un alcance global. Y podemos definir nuestros propios alcances globales, que se aplicarán en cada consulta realizada desde un modelo determinado.
+
+Hay dos formas de definir un alcance global: mediante una clausura o mediante una clase entera. En cada una de ellas, registrará el alcance definido en el método `booted()` del modelo. Comencemos con el método de clausura, que se ilustra en el ejemplo siguiente.
+
+_Agregar un alcance global mediante una clausura_
+```php
+...
+class Contact extends Model
+{
+    protected static function booted()
+    {
+        static::addGlobalScope('active', function (Builder $builder) {
+            $builder->where('active', true);
+        });
+    }
+```
+
+Eso es todo. Acabamos de agregar un alcance global llamado `active`, y ahora todas las consultas en este modelo tendrán como alcance solo las filas con `active` establecido como `true`.
+
+A continuación, probemos el método más largo, como se muestra en el ejemplo siguiente. Ejecute el siguiente comando para crear una clase llamada `ActiveScope`.
+
+
+```sh
+php artisan make:scope ActiveScope
+```
+
+Tendrá un método `apply()` que toma una instancia de un generador de consultas y una instancia del modelo.
+
+_Creación de una clase de alcance global_
+```php
+<?php
+
+namespace App\Models\Scopes;
+
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Scope;
+
+class ActiveScope implements Scope
+{
+    public function apply(Builder $builder, Model $model): void
+    {
+        $builder->where('active', true);
+    }
+}
+```
+
+Para aplicar este alcance a un modelo, anule una vez más el método `booted()` del padre y llame a `addGlobalScope()` en la clase usando `static`, como se muestra en el ejemplo siguiente.
+
+_Aplicando un alcance global basado en clases_
+```php
+<?php
+
+use App\Models\Scopes;
+use Illuminate\Database\Eloquent\Model;
+
+class Contact extends Model
+{
+    protected static function booted()
+    {
+        static::addGlobalScope(new ActiveScope);
+    }
+}
+```
+
+:::info `Contact` sin espacio de nombres
+Es posible que hayas notado que varios de estos ejemplos han utilizado la clase `Contact`, sin espacio de nombres. Esto no es normal y solo lo he hecho para ahorrar espacio en el libro. Normalmente, incluso tus modelos de nivel superior se ubicarían en algo como `App\Models\Contact`.
+:::
+
+### Eliminando alcances globales
+
+Hay tres formas de eliminar un alcance global, y las tres utilizan el método `withoutGlobalScope()` o `withoutGlobalScopes()`. Si está eliminando un alcance basado en clausura, el primer parámetro del registro `addGlobalScope()` de ese alcance será la clave que utilizó para habilitarlo:
+
+```php
+$allContacts = Contact::withoutGlobalScope('active')->get();
+```
+
+Si está eliminando un único alcance global basado en una clase, puede pasar el nombre de la clase a `withoutGlobalScope()` o `withoutGlobalScopes()`:
+
+```php
+Contact::withoutGlobalScope(ActiveScope::class)->get();
+
+Contact::withoutGlobalScopes([ActiveScope::class, VipScope::class])->get();
+```
+
+O bien, puede simplemente deshabilitar todos los alcances globales para una consulta:
+
+```php
+Contact::withoutGlobalScopes()->get();
+```
+
+### Customizing Field Interactions with Accessors, Mutators, and Attribute Casting
 
