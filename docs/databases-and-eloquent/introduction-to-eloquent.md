@@ -635,5 +635,196 @@ O bien, puede simplemente deshabilitar todos los alcances globales para una cons
 Contact::withoutGlobalScopes()->get();
 ```
 
-### Customizing Field Interactions with Accessors, Mutators, and Attribute Casting
+## Personalizar Interacciones de Campo con Accesores, Mutadores y Conversión de atributos
+
+Ahora que hemos cubierto cómo introducir y sacar registros de la base de datos con Eloquent, hablemos sobre cómo decorar y manipular los atributos individuales en sus modelos Eloquent.
+
+Los accesores, mutadores y conversión de atributos le permiten personalizar la forma en que se ingresan o generan los atributos individuales de las instancias de Eloquent. Sin usar ninguno de estos, cada atributo de su instancia de Eloquent se trata como una cadena y no puede tener ningún atributo en sus modelos que no exista en la base de datos. Pero podemos cambiar eso.
+
+### Accesores
+
+Los _accesores_ le permiten definir atributos personalizados en sus modelos Eloquent para cuando esté _leyendo_ datos de la instancia del modelo. Esto puede deberse a que desea cambiar la forma en que se genera una columna en particular o a que desea crear un atributo personalizado que no existe en la tabla de la base de datos.
+
+Para definir un accesor, debe crear un método en su modelo con el nombre de su propiedad, pero en _camelCased_. Por lo tanto, si el nombre de su propiedad es `first_name`, el método de acceso se denominaría `firstName`. Luego, este método debe tener su tipo de retorno que muestre que devuelve una instancia de `Illuminate\Database\Eloquent\Casts\Attribute`.
+
+Vamos a probarlo. Primero, decoraremos una columna preexistente.
+
+_Decorar una columna preexistente utilizando accesores Eloquent_
+```php
+// Model definition:
+use Illuminate\Database\Eloquent\Casts\Attribute;
+
+class Contact extends Model
+{
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn (string $value) => $value ?: '(No name provided)',
+        );
+    }
+}
+
+// Accessor usage:
+$name = $contact->name;
+```
+
+Pero también podemos utilizar accesores para definir atributos que nunca existieron en la base de datos, como se ve en el ejemplo siguiente.
+
+_Definición de un atributo sin columna de respaldo mediante accesores Eloquent_
+
+```php
+// Model definition:
+class Contact extends Model
+{
+    protected function fullName(): Attribute
+    {
+        return Attribute::make(
+            get: fn () => $this->first_name . ' ' . $this->last_name,
+        );
+    }
+}
+
+// Accessor usage:
+$fullName = $contact->full_name;
+```
+
+### Mutadores
+
+Los _mutadores_ funcionan de la misma manera que los accesores, excepto que sirven para determinar cómo procesar la _configuración_ de los datos en lugar de obtenerlos. Al igual que con los accesores, puedes usarlos para modificar el proceso de escritura de datos en columnas existentes o para permitir la configuración de columnas que no existen en la base de datos.
+
+Los mutadores se definen de la misma manera que los accesores, pero en lugar del parámetro `get`, configuraremos el parámetro `set`.
+
+Vamos a probarlo. Primero, agregaremos una restricción para actualizar una columna preexistente.
+
+_Modificar la configuración del valor de un atributo mediante mutadores Eloquent_
+```php
+// Defining the mutator
+class Order extends Model
+{
+    protected function amount(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => $value > 0 ? $value : 0,
+        );
+    }
+}
+
+// Using the mutator
+$order->amount = '15';
+```
+
+Ahora, agreguemos una columna proxy para la configuración, como se muestra en el ejemplo siguiente. Si configuramos valores en más de una columna al mismo tiempo, o si personalizamos el nombre de la columna que configuramos, podemos devolver una matriz desde el método `set()`.
+
+_Permitir establecer el valor de un atributo inexistente mediante mutadores Eloquent_
+```php
+// Defining the mutator
+class Order extends Model
+{
+    protected function workgroupName(): Attribute
+    {
+        return Attribute::make(
+            set: fn (string $value) => [
+                'email' => "{$value}@ourcompany.com",
+            ],
+        );
+    }
+}
+
+// Using the mutator
+$order->workgroup_name = 'jstott';
+```
+
+Como probablemente puedas adivinar, es relativamente poco común crear un mutador para una columna inexistente, porque puede ser confuso establecer una propiedad y hacer que cambie una columna diferente — pero es posible.
+
+### Convirtiendo atributos
+
+Probablemente puedas imaginar escribir accesores para convertir todos tus campos de tipo entero en enteros, codificar y decodificar JSON para almacenar en una columna `TEXT`, o convertir `TINYINT 0` y `1` a y desde valores Booleanos.
+
+Afortunadamente, ya existe un sistema para eso en Eloquent. Se llama _conversión de atributos_ y permite definir que cualquiera de las columnas se trate siempre, tanto en lectura como en escritura, como si perteneciera a un tipo de datos en particular. Las opciones se enumeran en la tabla siguiente.
+
+_Posibles tipos de columnas de conversión de atributos_
+
+|Tipo|Descripción|
+|-|-|
+|`int\|integer`|Convierte con PHP (`int`)|
+|`real\|float\|double`|Convierte con PHP (`float`)|
+|`decimal:<digits>`|Convierte con PHP `number_format()` la cantidad de decimales especificada|
+|`string`|Convierte con PHP (`string`)|
+|`bool\|boolean`|Convierte con PHP (`bool`)|
+|`object\|json`|Parsea desde/hacia JSON, como un objeto `stdClass`|
+|`array`|Parsea desde/hacia JSON, como una matriz|
+|`collection`|Parsea desde/hacia JSON, como una colección|
+|`date\|datetime`|Parsea desde la base de datos `DATETIME` a Carbon y viceversa|
+|`timestamp`|Parsea desde la base de datos `TIMESTAMP` a Carbon y viceversa|
+|`encrypted`|Maneja el cifrado y descifrado de una cadena|
+|`enum`|Convierte a una enumeración|
+|`hashed`|Maneja el hash de una cadena|
+
+El ejemplo siguiente muestra cómo utilizar la conversión de atributos en su modelo.
+
+_Uso de conversión de atributos en un modelo Eloquent_
+```php
+use App\Enums\SubscriptionStatus;
+
+class Contact extends Model
+{
+    protected $casts = [
+        'vip' => 'boolean',
+        'children_names' => 'array',
+        'birthday' => 'date',
+        'subscription' => SubscriptionStatus::class
+    ];
+}
+```
+
+### Conversión de atributos personalizados
+
+Si los tipos de atributos integrados no son suficientes, podemos crear tipos de conversión personalizados y usarlos en la matriz `$casts`.
+
+Un tipo de conversión personalizada se puede definir como una clase PHP normal con un método `get` y `set`. El método `get` se llamará al recuperar el atributo dado de un modelo elocuente. El método `set` se llamará antes de guardar el atributo en la base de datos, como puede ver en el ejemplo siguiente.
+
+_Un ejemplo de tipo de yeso personalizado_
+```php
+<?php
+
+namespace App\Casts;
+
+use Carbon\Carbon;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
+
+class Encrypted implements CastsAttributes
+{
+    /**
+     * Cast the given value.
+     *
+     * @param array<string, mixed> $attributes
+    */
+    public function get(Model $model, string $key, mixed $value, array $attributes)
+    {
+        return Crypt::decrypt($value);
+    }
+
+    /**
+     * Prepare the given value for storage.
+     *
+     * @param array<string, mixed> $attributes
+    */
+    public function set(Model $model, string $key, mixed $value, array $attributes)
+    {
+        return Crypt::encrypt($value);
+    }
+}
+```
+
+Puede utilizar conversiones personalizadas en la propiedad `$casts` en su modelo Eloquent:
+
+```php
+protected $casts = [
+  'ssn' => \App\Casts\Encrypted::class,
+];
+```
+
+## Eloquent Collections
 
