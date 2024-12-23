@@ -826,5 +826,117 @@ protected $casts = [
 ];
 ```
 
-## Eloquent Collections
+## Colecciones Elocuentes
+
+Cuando realiza una llamada de consulta en Eloquent que tiene el potencial de devolver varias filas, en lugar de una matriz, se incluirán en una colección de Eloquent, que es un tipo especializado de colección. Echemos un vistazo a las colecciones y las colecciones de Eloquent, y qué las hace mejores que las matrices simples.
+
+### Presentamos la colección básica
+
+Los objetos de colección de Laravel (`Illuminate\Support\Collection`) son un poco como matrices con esteroides. Los métodos que exponen en objetos similares a matrices son tan útiles que, una vez que los hayas usado durante un tiempo, probablemente querrás incorporarlos a proyectos que no sean de Laravel — lo cual puedes hacer con el paquete [Illuminate/Collections](https://github.com/illuminate/collections).
+
+La forma más sencilla de crear una colección es usar el asistente `collect()`. Pasa una matriz o úsala sin argumentos para crear una colección vacía y luego insertar elementos en ella. Probémoslo:
+
+```php
+$collection = collect([1, 2, 3]);
+```
+
+Ahora digamos que queremos filtrar todos los números pares:
+
+```php
+$odds = $collection->reject(function ($item) {
+    return $item % 2 === 0;
+});
+```
+
+O bien, ¿qué sucede si queremos obtener una versión de la colección en la que cada elemento se multiplique por 10? Podemos hacerlo de la siguiente manera:
+
+```php
+$multiplied = $collection->map(function ($item) {
+    return $item * 10;
+});
+```
+
+Incluso podemos obtener solo los números pares, multiplicarlos todos por 10 y reducirlos a un solo número mediante `sum()`:
+
+```php
+$sum = $collection
+    ->filter(function ($item) {
+        return $item % 2 == 0;
+    })->map(function ($item) {
+        return $item * 10;
+    })->sum();
+```
+
+Como puede ver, las colecciones proporcionan una serie de métodos que, opcionalmente, se pueden encadenar para realizar operaciones funcionales en sus matrices. Proporcionan la misma funcionalidad que los métodos nativos de PHP, como `array_map()` y `array_reduce()`, pero no tiene que memorizar el orden impredecible de los parámetros de PHP y la sintaxis de encadenamiento de métodos es infinitamente más legible.
+
+Hay más de 60 métodos disponibles en la clase `Collection`, incluidos los métodos `max()`, `whereIn()`, `flatten()` y `flip()` — no hay suficiente espacio para cubrirlos todos aquí. Hablaremos más sobre ellos [aquí](../helpers-and-collections/helpers.html), o puedes consultar la [documentación de colecciones de Laravel](https://laravel.com/docs/11.x/collections) para ver todos los métodos.
+
+:::info Colecciones en lugar de matrices
+Las colecciones también se pueden usar en cualquier contexto (excepto en la sugerencia de tipado) en el que se puedan usar matrices. Permiten la iteración, por lo que se pueden pasar a `foreach;` y permiten el acceso a matrices, por lo que si tienen claves, se puede probar `$a = $collection['a']`.
+:::
+
+### Colecciones deiferidas
+
+Las [colecciones deiferidas](https://laravel.com/docs/11.x/collections#lazy-collections) aprovechan el poder de los generadores PHP para procesar conjuntos de datos muy grandes mientras mantienen muy bajo el uso de memoria de su aplicación.
+
+Imagina que necesitas iterar sobre 100,000 contactos en tu base de datos. Si estuvieras usando las `Collections` normales de Laravel, probablemente te encontrarías con problemas de memoria muy rápidamente; todos los 100,000 registros se cargarían en la memoria, y eso es mucho pedirle a tu máquina:
+
+```php
+$verifiedContacts = App\Contact::all()->filter(function ($contact) {
+    return $contact->isVerified();
+});
+```
+
+Eloquent simplifica el uso de colecciones diferidas con sus modelos Eloquent. Si utiliza el método `cursor`, los modelos Eloquent devolverán una instancia de `LazyCollection` en lugar de la clase `Collection` predeterminada. Al utilizar colecciones diferidas, su aplicación solo cargará un registro a la vez en la memoria:
+
+```php
+$verifiedContacts = App\Contact::cursor()->filter(function ($contact) {
+    return $contact->isVerified();
+});
+```
+
+### ¿Qué agregan las colecciones elocuentes?
+
+Cada colección Eloquent es una colección normal, pero ampliada para las necesidades particulares de una colección de resultados Eloquent.
+
+Una vez más, aquí no hay suficiente espacio para cubrir todas las adiciones, pero se centran en los aspectos únicos de la interacción con una colección no solo de objetos genéricos, sino de objetos destinados a representar filas de bases de datos.
+
+Por ejemplo, cada colección Eloquent tiene un método llamado `modelKeys()` que devuelve una matriz de las claves principales de cada instancia de la colección. `find($id)` busca una instancia que tenga la clave principal de `$id`.
+
+Una característica adicional disponible aquí es la capacidad de definir que cualquier modelo dado debe devolver sus resultados envueltos en una clase específica de colección. Por lo tanto, si desea agregar métodos específicos a cualquier colección de objetos de su modelo `Order` — posiblemente relacionados con el resumen de los detalles financieros de sus pedidos — puede crear una `OrderCollection` personalizada que extienda `Illuminate\Database\Eloquent\Collection` y luego registrarla en su modelo, como se muestra en el ejemplo siguiente.
+
+_Clases `Collection` personalizadas para modelos Eloquent_
+```php
+...
+class OrderCollection extends Collection
+{
+    public function sumBillableAmount()
+    {
+        return $this->reduce(function ($carry, $order) {
+            return $carry + ($order->billable ? $order->amount : 0);
+        }, 0);
+    }
+}
+```
+```php
+...
+class Order extends Model
+{
+    public function newCollection(array $models = [])
+    {
+        return new OrderCollection($models);
+    }
+```
+
+Ahora, cada vez que obtengas una colección de `Orders` (por ejemplo, de `Order::all()`), en realidad será una instancia de la clase `OrderCollection`:
+
+```php
+$orders = Order::all();
+$billableAmount = $orders->sumBillableAmount();
+```
+
+## Eloquent Serialization
+
+
+
 
