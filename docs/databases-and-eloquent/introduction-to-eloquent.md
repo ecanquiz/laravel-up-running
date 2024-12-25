@@ -935,7 +935,26 @@ $orders = Order::all();
 $billableAmount = $orders->sumBillableAmount();
 ```
 
-## Eloquent Serialization
+## Serialización Elocuente
+
+La _serialización_ es lo que sucede cuando tomas algo complejo — una matriz o un objeto — y lo conviertes en una cadena. En un contexto basado en la web, esa cadena suele ser JSON, pero también puede adoptar otras formas.
+
+La serialización de registros complejos de bases de datos puede ser, bueno, compleja, y este es uno de los puntos en los que muchos ORMs fallan. Afortunadamente, con Eloquent obtienes dos métodos poderosos de forma gratuita: `toArray()` y `toJson()`. Las colecciones también tienen `toArray()` y `toJson()`, por lo que todos estos son válidos:
+
+```php
+$contactArray = Contact::first()->toArray();
+$contactJson = Contact::first()->toJson();
+$contactsArray = Contact::all()->toArray();
+$contactsJson = Contact::all()->toJson();
+```
+
+También puedes convertir una instancia o colección de Eloquent a una cadena (`$string = (string) $contact;`), pero tanto los modelos como las colecciones simplemente ejecutarán `toJson()` y devolverán el resultado.
+
+### Returning models directly from route methods
+
+
+
+
 
 
 
