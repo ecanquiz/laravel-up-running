@@ -670,7 +670,7 @@ $name = $contact->name;
 
 Pero también podemos utilizar accesores para definir atributos que nunca existieron en la base de datos, como se ve en el ejemplo siguiente.
 
-_Definición de un atributo sin columna de respaldo mediante accesores Eloquent_
+#### _Definición de un atributo sin columna de respaldo mediante accesores Eloquent_
 
 ```php
 // Model definition:
@@ -950,12 +950,85 @@ $contactsJson = Contact::all()->toJson();
 
 También puedes convertir una instancia o colección de Eloquent a una cadena (`$string = (string) $contact;`), pero tanto los modelos como las colecciones simplemente ejecutarán `toJson()` y devolverán el resultado.
 
-### Returning models directly from route methods
+### Devolver modelos directamente desde los métodos de ruta
+
+El enrutador de Laravel finalmente convierte todo lo que los métodos de ruta devuelven en una cadena, por lo que hay un truco inteligente que puedes usar. Si devuelves el resultado de una llamada Eloquent en un controlador, se convertirá automáticamente en una cadena y, por lo tanto, se devolverá como JSON. Eso significa que una ruta que devuelva JSON puede ser tan simple como cualquiera de las del ejemplo simple.
+
+_Devolver JSON directamente desde las rutas_
+```php
+// routes/web.php
+Route::get('api/contacts', function () {
+    return Contact::all();
+});
+
+Route::get('api/contacts/{id}', function ($id) {
+    return Contact::findOrFail($id);
+});
+```
+
+### Ocultar atributos de JSON
+
+Es muy común usar retornos JSON en las API, y es muy común querer ocultar ciertos atributos en estos contextos, por eso Eloquent hace que sea fácil ocultar cualquier atributo cada vez que se convierte a JSON.
+
+Puede deshabilitar atributos específicos y ocultar los que enumera:
+
+```php
+class Contact extends Model
+{
+    public $hidden = ['password', 'remember_token'];
+```
+
+o permitir atributos específicos, mostrando solo los que enumera:
+
+```php
+class Contact extends Model
+{
+    public $visible = ['name', 'email', 'status'];
+```
+
+Esto también funciona para las relaciones:
+
+```php
+class User extends Model
+{
+    public $hidden = ['contacts'];
+
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
+    }
+```
 
 
+:::info Cargando el Contenido de una Relación
+De manera predeterminada, el contenido de una relación no se carga cuando se obtiene un registro de la base de datos, por lo que no importa si se oculta o no. Pero, como aprenderá en breve, es posible obtener un registro _con_ sus elementos relacionados y, en este contexto, esos elementos no se incluirán en una copia serializada de ese registro si decide ocultar esa relación.
 
+En caso de que ahora tengas curiosidad, puedes obtener un `User` con todos los contactos — suponiendo que hayas configurado la relación correctamente — con la siguiente llamada:
+```php
+$user = User::with('contacts')->first();
+```
+:::
 
+Puede haber ocasiones en las que desees que un atributo sea visible solo para una única llamada. Esto es posible con el método Eloquent `makeVisible()`:
 
+```php
+$array = $user->makeVisible('remember_token')->toArray()
+```
 
+:::info Agregar una Columna Generada a la Matriz y la Salida JSON
+Si ha creado un accesor para una columna que no existe — [por ejemplo, nuestra columna `full_name`](./introduction-to-eloquent.html#definicion-de-un-atributo-sin-columna-de-respaldo-mediante-accesores-eloquent)  —, puede agregarlo a la matriz `$appends` en el modelo, lo que lo agregará a la matriz y a la salida JSON:
+```php
+class Contact extends Model
+{
+    protected $appends = ['full_name'];
 
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+}
+```
+:::
+
+## Eloquent Relationships
 
