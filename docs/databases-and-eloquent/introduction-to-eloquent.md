@@ -1030,5 +1030,25 @@ class Contact extends Model
 ```
 :::
 
-## Eloquent Relationships
+## Relaciones elocuentes
+
+En un modelo de base de datos relacional, se espera que tenga tablas _relacionadas_ entre sí — de ahí el nombre. Eloquent ofrece herramientas simples y potentes para que el proceso de relacionar las tablas de su base de datos sea más fácil que nunca.
+
+Muchos de nuestros ejemplos en este capítulo se han centrado en un `user` que tiene muchos `contacts`, una situación relativamente común.
+
+En un ORM como Eloquent, esto se llamaría una relación _de uno a muchos_: un usuario tiene muchos contactos.
+
+Si se tratara de un CRM en el que un contacto pudiera asignarse a muchos usuarios, se trataría de una relación de _muchos a muchos_: muchos usuarios pueden estar relacionados con un contacto y cada usuario puede estar relacionado con muchos contactos. Un usuario _tiene y pertenece a muchos_ contactos.
+
+Si cada contacto puede tener muchos números de teléfono y un usuario quiere una base de datos de cada número de teléfono para su CRM, diría que el usuario _tiene muchos_ números de teléfono _a través de_ contactos, es decir, un usuario _tiene muchos_ contactos y el contacto _tiene muchos_ números de teléfono, por lo que el contacto es una especie de intermediario.
+
+¿Y si cada contacto tiene una dirección, pero solo te interesa hacer un seguimiento de una de ellas? Puedes tener todos los campos de dirección en el `Contact`, pero también puedes crear un modelo `Address`, es decir, que el contacto _tiene_ una dirección.
+
+Por último, ¿qué ocurre si desea poder darle estrellas (como favoritos) a los contactos, pero también a los eventos? Se trataría de una relación _polimórfica_, en la que un usuario _tiene muchas_ estrellas, pero algunas pueden ser contactos y otras eventos.
+
+Veamos ahora cómo definir y acceder a estas relaciones.
+
+### One to one
+Una a uno
+
 
