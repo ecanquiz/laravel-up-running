@@ -1030,7 +1030,7 @@ class Contact extends Model
 ```
 :::
 
-## Relaciones elocuentes
+## Relaciones Elocuentes
 
 En un modelo de base de datos relacional, se espera que tenga tablas _relacionadas_ entre sí — de ahí el nombre. Eloquent ofrece herramientas simples y potentes para que el proceso de relacionar las tablas de su base de datos sea más fácil que nunca.
 
@@ -1048,7 +1048,87 @@ Por último, ¿qué ocurre si desea poder darle estrellas (como favoritos) a los
 
 Veamos ahora cómo definir y acceder a estas relaciones.
 
-### One to one
-Una a uno
+### Una a uno
+
+Empecemos por algo sencillo: un `Contact` _tiene un_ número de teléfono. Esta relación se define en el ejemplo siguiente.
+
+_Definición de una relación uno a uno_
+```php
+class Contact extends Model
+{
+    public function phoneNumber()
+    {
+        return $this->hasOne(PhoneNumber::class);
+    }
+```
+
+Como puedes ver, los métodos que definen relaciones están en el propio modelo Eloquent (`$this->hasOne()`) y toman, al menos en esta instancia, el nombre de clase completo de la clase con la que los estás relacionando.
+
+¿Cómo debería definirse esto en su base de datos? Dado que hemos definido que `Contact` tiene un `PhoneNumber`, Eloquent espera que la tabla que admite la clase `PhoneNumber` (probablemente `phone_numbers`) tenga una columna `contact_id`. Si le dio un nombre diferente (por ejemplo, `owner_id`), deberá cambiar su definición:
+
+```php
+return $this->hasOne(PhoneNumber::class, 'owner_id');
+```
+
+Así es como accedemos al `PhoneNumber` de un `Contact`:
+
+```php
+$contact = Contact::first();
+$contactPhone = $contact->phoneNumber;
+```
+
+Ten en cuenta que definimos el método en el ejemplo anterior con `phoneNumber()`, pero accedemos a él con `->phoneNumber`. Esa es la magia. También puedes acceder a él con `->phone_number`. Esto devolverá una instancia completa de Eloquent del registro `PhoneNumber` relacionado.
+
+Pero ¿qué pasa si queremos acceder al `Contact` desde el `PhoneNumber`? También hay un método para eso (consulte el ejemplo siguiente).
+
+_Definición de la inversa de una relación uno a uno_
+```php
+class PhoneNumber extends Model
+{
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class);
+    }
+```
+
+Luego accedemos de la misma manera:
+
+```php
+$contact = $phoneNumber->contact;
+```
+
+>### Insertar Elementos Relacionados
+>Cada tipo de relación tiene sus propias peculiaridades sobre cómo relacionar modelos, pero aquí está el núcleo de cómo funciona: pasa una instancia a `save()`, o una matriz de instancias a `saveMany()`. También puedes pasar propiedades a `create()` o `createMany()` y ellos crearán nuevas instancias para ti:
+>```php
+>$contact = Contact::first();
+>
+>$phoneNumber = new PhoneNumber;
+>$phoneNumber->number = 8008675309;
+>$contact->phoneNumbers()->save($phoneNumber);
+>
+>// or
+>
+>$contact->phoneNumbers()->saveMany([
+>    PhoneNumber::find(1),
+>    PhoneNumber::find(2),
+>]);
+>
+>// or
+>
+>$contact->phoneNumbers()->create([
+>    'number' => '+13138675309',
+>]);
+>
+>// or
+>
+>$contact->phoneNumbers()->createMany([
+>    ['number' => '+13138675309'],
+>    ['number' => '+15556060842'],
+>]);
+>```
+
+### One to many
+
+
 
 
