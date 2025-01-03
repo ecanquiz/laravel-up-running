@@ -1048,7 +1048,7 @@ Por último, ¿qué ocurre si desea poder darle estrellas (como favoritos) a los
 
 Veamos ahora cómo definir y acceder a estas relaciones.
 
-### Una a uno
+### Uno a uno
 
 Empecemos por algo sencillo: un `Contact` _tiene un_ número de teléfono. Esta relación se define en el ejemplo siguiente.
 
@@ -1127,8 +1127,122 @@ $contact = $phoneNumber->contact;
 >]);
 >```
 
-### One to many
+### Uno a muchos
 
+La relación de uno a muchos es, por lejos, la más común. Veamos cómo definir que nuestro `User` _tiene muchos_ `Contact` (ejemplo siguiente).
+
+_Definición de una relación de uno a muchos_
+```php
+class User extends Model
+{
+    public function contacts()
+    {
+        return $this->hasMany(Contact::class);
+    }
+```
+
+Una vez más, esto espera que la tabla de respaldo del modelo `Contact` (probablemente `contacts`) tenga una columna `user_id`. Si no la tiene, anúlela pasando el nombre de columna correcto como segundo parámetro de `hasMany()`.
+
+Podemos obtener los `Contacts` de un `User` de la siguiente manera:
+
+```php
+$user = User::first();
+$usersContacts = $user->contacts;
+```
+
+Al igual que con la relación uno a uno, utilizamos el nombre del método de relación y lo llamamos como si fuera una propiedad en lugar de un método. Sin embargo, este método devuelve una colección en lugar de una instancia de modelo. Y esta es una colección Eloquent normal, por lo que podemos divertirnos con ella:
+
+```php
+$donors = $user->contacts->filter(function ($contact) {
+    return $contact->status == 'donor';
+});
+
+$lifetimeValue = $contact->orders->reduce(function ($carry, $order) {
+    return $carry + $order->amount;
+}, 0);
+```
+
+Al igual que con uno a uno, también podemos definir la inversa (ejemplo siguiente).
+
+_Definición de la inversa de una relación de uno a muchos_
+```php
+class Contact extends Model
+{
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+```
+
+Y al igual que en el uno a uno, podemos acceder al `User` desde el `Contact`:
+
+```php
+$userName = $contact->user->name;
+```
+
+:::info Adjuntar y Despegar Elementos Relacionados del Elemento Adjunto
+La mayoría de las veces adjuntamos un elemento ejecutando `save()` en el elemento principal y pasando el elemento relacionado, como en `$user->contacts()->save($contact)`. Pero si desea realizar estos comportamientos en el elemento adjunto (“secundario”), puede usar `associate()` y `dissociate()` en el método que devuelve la relación `belongsTo`:
+```php
+$contact = Contact::first();
+
+$contact->user()->associate(User::first());
+$contact->save();
+
+// and later
+
+$contact->user()->dissociate();
+$contact->save();
+```
+:::
+
+#### Uso de relaciones como generadores de consultas
+
+Hasta ahora, hemos tomado el nombre del método (por ejemplo, `contacts()`) y lo hemos llamado como si fuera una propiedad (por ejemplo, `$user->contacts`). ¿Qué sucede si lo llamamos como un método? En lugar de procesar la relación, devolverá un generador de consultas con un ámbito predefinido.
+
+Entonces, si tienes `User` `1`, y llamas a su método `contacts()`, ahora tendrás un generador de consultas con un alcance predeterminado para “todos los contactos que tienen un campo `user_id` con el valor `1`”. Luego puedes crear una consulta funcional desde allí:
+
+```php
+$donors = $user->contacts()->where('status', 'donor')->get();
+```
+
+#### Seleccionar solo registros que tengan un elemento relacionado
+
+Puede elegir seleccionar solo registros que cumplan con criterios particulares con respecto a sus elementos relacionados utilizando `has()`:
+
+```php
+$postsWithComments = Post::has('comments')->get();
+```
+
+También puedes ajustar aún más los criterios:
+
+```php
+$postsWithManyComments = Post::has('comments', '>=', 5)->get();
+```
+
+Puedes anidar los criterios:
+
+```php
+$usersWithPhoneBooks = User::has('contacts.phoneNumbers')->get();
+```
+
+Y por último, puedes escribir consultas personalizadas sobre los elementos relacionados:
+
+```php
+// Gets all contacts with a phone number containing the string "867-5309"
+$jennyIGotYourNumber = Contact::whereHas('phoneNumbers', function ($query) {
+    $query->where('number', 'like', '%867-5309%');
+})->get();
+
+// Shortened version of the same code above
+$jennyIGotYourNumber = Contact::whereRelation(
+    'phoneNumbers',
+    'number',
+    'like',
+    '%867-5309'
+)->get();
+```
+
+### Has one of many
 
 
 
