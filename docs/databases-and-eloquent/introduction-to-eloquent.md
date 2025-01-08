@@ -1242,7 +1242,30 @@ $jennyIGotYourNumber = Contact::whereRelation(
 )->get();
 ```
 
-### Has one of many
+### Tiene uno de muchos
 
+Un escenario común al recuperar registros de una relación de uno a muchos es que desea recuperar solo un elemento de esa relación, a menudo el más nuevo o el más antiguo. Laravel proporciona una herramienta conveniente para estas situaciones: tiene uno de muchos.
 
+Las relaciones _has-one-of-many_ le permiten definir que un método determinado debe recuperar el elemento más nuevo en una colección relacionada, o el elemento más antiguo, o el elemento con el valor mínimo o máximo de cualquier columna en particular, como puede ver en el ejemplo siguiente.
 
+_Definición de relaciones de tipo "tiene uno de muchos"_
+```php
+class User extends Model
+{
+    public function newestContact(): HasOne
+    {
+        return $this->hasOne(Contact::class)->latestOfMany();
+    }
+
+    public function oldestContact(): HasOne
+    {
+        return $this->hasOne(Contact::class)->oldestOfMany();
+    }
+
+    public function emergencyContact(): HasOne
+    {
+        return $this->hasOne(Contact::class)->ofMany('priority', 'max');
+    }
+```
+
+### Has many through
