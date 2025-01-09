@@ -1268,4 +1268,27 @@ class User extends Model
     }
 ```
 
-### Has many through
+### Tiene muchos a través
+
+`hasManyThrough()` es realmente un método conveniente para extraer relaciones de una relación. Piense en el ejemplo que di antes, donde un `User` tiene muchos `Contacts` y cada `Contact` tiene muchos `PhoneNumbers`. ¿Qué sucede si desea obtener la lista de números de teléfono de contacto de un usuario? Esa es una relación de tipo tiene-muchos-a-través.
+
+Esta estructura supone que la tabla `contacts` tiene un `user_id` para relacionar los contactos con los usuarios y la tabla `phone_numbers` tiene un `contact_id` para relacionarla con los contactos. Luego, definimos la relación en `User` como en el ejemplo siguiente.
+
+_Definición de una relación de tiene-muchos-a-través_
+```php
+class User extends Model
+{
+    public function phoneNumbers()
+    {
+        // Newer string-based syntax
+        return $this->through('contact')->has('phoneNumber');
+
+        // Traditional syntax
+        return $this->hasManyThrough(PhoneNumber::class, Contact::class);
+    }
+```
+
+Para acceder a esta relación, utilice `$user->phone_numbers`. Si necesita personalizar la clave de la relación en los modelos intermedios o distantes, utilice la sintaxis tradicional; puede definir la clave en el modelo intermedio (con el tercer parámetro de `hasManyThrough()`) y la clave de la relación en el modelo distante (con el cuarto parámetro).
+
+### Has one through
+
