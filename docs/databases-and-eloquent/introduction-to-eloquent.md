@@ -1290,5 +1290,24 @@ class User extends Model
 
 Para acceder a esta relación, utilice `$user->phone_numbers`. Si necesita personalizar la clave de la relación en los modelos intermedios o distantes, utilice la sintaxis tradicional; puede definir la clave en el modelo intermedio (con el tercer parámetro de `hasManyThrough()`) y la clave de la relación en el modelo distante (con el cuarto parámetro).
 
-### Has one through
+### Tiene uno a través
 
+`hasOneThrough()` es como `hasManyThrough()`, pero en lugar de acceder a muchos elementos relacionados a través de elementos intermedios, solo accede a un único elemento relacionado a través de un único elemento intermedio.
+
+¿Qué sucedería si cada usuario perteneciera a una empresa y esa empresa tuviera un único número de teléfono y quisieras poder obtener el número de teléfono de un usuario extrayendo el número de teléfono de su empresa? Esa es una relación de tipo "tiene uno a través", como se muestra en el ejemplo siguiente.
+
+_Definición de una relación de tiene-uno-a-través_
+```php
+class User extends Model
+{
+    public function phoneNumber()
+    {
+        // Newer string-based syntax
+        return $this->through('company')->has('phoneNumber');
+
+        // Traditional syntax
+        return $this->hasOneThrough(PhoneNumber::class, Company::class);
+    }
+```
+
+### Many to many
