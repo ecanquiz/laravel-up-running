@@ -1310,4 +1310,57 @@ class User extends Model
     }
 ```
 
-### Many to many
+### Muchos a muchos
+
+Aquí es donde las cosas empiezan a complicarse. Tomemos como ejemplo un CRM que permite que un `User` tenga muchos `Contacts` y que cada `Contact` esté relacionado con varios `Useres`.
+
+Primero, definimos la relación con el `User` como en el ejemplo siguiente.
+
+_Definición de una relación de muchos-a-muchos_
+```php
+class User extends Model
+{
+    public function contacts()
+    {
+        return $this->belongsToMany(Contact::class);
+    }
+}
+```
+
+Y como esto es de muchos a muchos, la inversa se ve exactamente igual (ejemplo siguiente).
+
+_Definición de la inversa de una relación de muchos-a-muchos_
+```php
+class Contact extends Model
+{
+    public function users()
+    {
+        return $this->belongsToMany(User::class);
+    }
+}
+```
+
+Dado que un único `Contact` no puede tener una columna `user_id` y un único `User` no puede tener una columna `contact_id`, las relaciones de varios a varios se basan en una tabla dinámica que conecta a los dos. La denominación convencional de esta tabla se realiza colocando los dos nombres de tabla singulares juntos, ordenados alfabéticamente y separándolos con un guión bajo.
+
+Entonces, dado que estamos vinculando `users` y `contacts`, nuestra tabla dinámica debería llamarse `contact_user` (si desea personalizar el nombre de la tabla, páselo como segundo parámetro al método `belongsToMany()`). Necesita dos columnas: `contact_id` y `user_id`.
+
+Al igual que con `hasMany()`, obtenemos acceso a una colección de elementos relacionados, pero esta vez es desde ambos lados (ejemplo siguiente).
+
+_Acceder a los elementos relacionados desde ambos lados de una relación de muchos-a-muchos_
+```php
+$user = User::first();
+
+$user->contacts->each(function ($contact) {
+    // do something
+});
+
+$contact = Contact::first();
+
+$contact->users->each(function ($user) {
+    // do something
+});
+
+$donors = $user->contacts()->where('status', 'donor')->get();
+```
+
+#### Getting data from the pivot table
