@@ -1363,4 +1363,56 @@ $contact->users->each(function ($user) {
 $donors = $user->contacts()->where('status', 'donor')->get();
 ```
 
-#### Getting data from the pivot table
+#### Obtener datos de tabla pivote
+
+Una característica exclusiva de muchos a muchos es que es nuestra primera relación que tiene una tabla pivote. Cuantos menos datos tenga en una tabla pivote, mejor, pero hay algunos casos en los que es valioso almacenar información en su tabla pivote — por ejemplo, es posible que desee almacenar un campo `created_at` para ver cuándo se creó esta relación.
+
+Para almacenar estos campos, debe agregarlos a la definición de la relación, como en el ejemplo siguiente. Puede definir campos específicos utilizando `withPivot()` o agregar marcas de tiempo `created_at` y `updated_at` utilizando `withTimestamps()`.
+
+_Agregar campos a un registro pivote_
+```php
+public function contacts()
+{
+    return $this->belongsToMany(Contact::class)
+        ->withTimestamps()
+        ->withPivot('status', 'preferred_greeting');
+    }
+```
+
+Cuando obtienes una instancia de modelo a través de una relación, tendrá una propiedad `pivot`, que representará su lugar en la tabla pivote de la que la acabas de extraer. Por lo tanto, puedes hacer algo como el ejemplo siguiente.
+
+_Obtención de datos de la entrada pivote de un elemento relacionado_
+```php
+$user = User::first();
+
+$user->contacts->each(function ($contact) {
+    echo sprintf(
+        'Contact associated with this user at: %s',
+        $contact->pivot->created_at
+    );
+});
+```
+
+Si lo desea, puede personalizar la clave `pivot` para que tenga un nombre diferente usando el método `as()`, como se muestra en el ejemplo siguiente.
+
+_Personalizar el nombre del atributo pivote_
+```php
+// User model
+public function groups()
+{
+    return $this->belongsToMany(Group::class)
+        ->withTimestamps()
+        ->as('membership');
+}
+
+// Using this relationship:
+User::first()->groups->each(function ($group) {
+    echo sprintf(
+        'User joined this group at: %s',
+        $group->membership->created_at
+    );
+});
+```
+
+>#### Unique Aspects of Attaching and Detaching
+>Many-to-Many Related Items
