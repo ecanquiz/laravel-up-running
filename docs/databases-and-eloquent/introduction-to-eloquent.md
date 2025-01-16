@@ -1414,5 +1414,50 @@ User::first()->groups->each(function ($group) {
 });
 ```
 
->#### Unique Aspects of Attaching and Detaching
->Many-to-Many Related Items
+>#### Aspectos Únicos de Adjuntar y Desacoplar Elementos Relacionados de Muchos-a-Muchos
+>Dado que su tabla pivote puede tener sus propias propiedades, debe poder configurarlas cuando adjunte un elemento relacionado de muchos-a-muchos. Puede hacerlo pasando una matriz como segundo parámetro a `save()`:
+>```php
+>$user = User::first();
+>$contact = Contact::first();
+>$user->contacts()->save($contact, ['status' => 'donor']);
+>```
+>Además, puedes usar `attach()` y `detach()` y, en lugar de pasar una instancia de un elemento relacionado, puedes pasar simplemente un ID. Funcionan de la misma manera que `save()` pero también pueden aceptar una matriz de IDs sin que necesites cambiar el nombre del método a algo como `attachMany()`:
+>```php
+>$user = User::first();
+>$user->contacts()->attach(1);
+>$user->contacts()->attach(2, ['status' => 'donor']);
+>$user->contacts()->attach([1, 2, 3]);
+>$user->contacts()->attach([
+>    1 => ['status' => 'donor'],
+>    2,
+>    3,
+>]);
+>
+>$user->contacts()->detach(1);
+>$user->contacts()->detach([1, 2]);
+>$user->contacts()->detach(); // Detaches all contacts
+>```
+>Si su objetivo no es adjuntar o separar, sino simplemente invertir el estado actual del adjunto, necesitará el método `toggle()`. Cuando utilice `toggle()`, si el ID dado está actualmente adjunto, se desacoplará; y si está actualmente acoplado, se adjuntará:
+>```php
+>$user->contacts()->toggle([1, 2, 3]);
+>```
+>También puedes usar `updateExistingPivot()` para realizar cambios solo en el registro pivote:
+>```php
+>$user->contacts()->updateExistingPivot($contactId, [
+>    'status' => 'inactive',
+>]);
+>```
+>Y si desea reemplazar las relaciones actuales, separando efectivamente todas las relaciones anteriores y adjuntando otras nuevas, puede pasar una matriz a `sync()`:
+>```php
+>$user->contacts()->sync([1, 2, 3]);
+>$user->contacts()->sync([
+>    1 => ['status' => 'donor'],
+>    2,
+>    3,
+>]);
+>```
+
+### Polymorphic
+
+
+
