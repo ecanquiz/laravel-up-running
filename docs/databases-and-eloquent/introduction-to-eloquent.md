@@ -1457,7 +1457,104 @@ User::first()->groups->each(function ($group) {
 >]);
 >```
 
-### Polymorphic
+### Polimórfico
 
+Recuerde, nuestra relación polimórfica es donde tenemos múltiples clases Eloquent correspondientes a la misma relación. Vamos a utilizar `Starts` (como favoritos) ahora. Un usuario puede marcar con una estrella tanto `Contacts` como `Events`, y de ahí proviene el nombre _polimórfico_: hay una única interfaz para objetos de múltiples tipos.
 
+Entonces, necesitaremos tres tablas (`stars`, `contacts`, `events`) y tres modelos (`Star`, `Contact` y `Event`). En realidad, necesitarás cuatro de cada una porque también necesitaremos `users` y `User`, pero llegaremos a eso en un segundo. Las tablas `contacts` y `events` estarán como normalmente están, y la tabla `stars` contendrá los campos `id`, `starrable_id` y `starrable_type`. Para cada `Star`, definiremos qué "tipo" (por ejemplo, `Contact` o `Event`) y qué ID de ese tipo (por ejemplo, `1`) es.
 
+Vamos a crear nuestros modelos, como se ve en el ejemplo siguiente.
+
+_Creación de modelos para un sistema estelar polimórfico_
+```php
+class Star extends Model
+{
+    public function starrable()
+    {
+        return $this->morphTo();
+    }
+}
+
+class Contact extends Model
+{
+    public function stars()
+    {
+        return $this->morphMany(Star::class, 'starrable');
+    }
+}
+
+class Event extends Model
+{
+    public function stars()
+    {
+        return $this->morphMany(Star::class, 'starrable');
+    }
+}
+```
+
+Entonces, ¿cómo creamos un `Star`?
+
+```php
+$contact = Contact::first();
+$contact->stars()->create();
+```
+
+Es así de fácil. El `Contact` ahora está marcado con una estrella.
+
+Para encontrar todas las `Stars` en un `Contact` dado, llamamos al método `stars()` como en el ejemplo siguiente.
+
+_Recuperación de las instancias de una relación polimórfica_
+```php
+$contact = Contact::first();
+
+$contact->stars->each(function ($star) {
+    // Do stuff
+});
+```
+
+Si tenemos una instancia de `Star`, podemos obtener su _target_ llamando al método que usamos para definir su relación `morphTo`, que en este contexto es `starrable()`. Observa el ejemplo siguiente.
+
+_Recuperar el target de una instancia polimórfica_
+```php
+$stars = Star::all();
+
+$stars->each(function ($star) {
+    var_dump($star->starrable); // An instance of Contact or Event
+});
+```
+
+Por último, puede que te preguntes: "¿Qué pasa si quiero saber quién marcó con una estrella este contacto?". Es una gran pregunta. Es tan simple como agregar `user_id` a tu tabla `stars` y luego configurar que un `User` _tiene muchas_ `Stars` y una `Star` _pertenece_ a un `User` — una relación de uno a muchos (ejemplo siguiente). La tabla `stars` se convierte casi en una tabla pivote entre tu `User` y tus `Contacts` y `Events`.
+
+_Extender un sistema polimórfico para diferenciar por usuario_
+```php
+class Star extends Model
+{
+    public function starrable()
+    {
+        return $this->morphsTo;
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+}
+
+class User extends Model
+{
+    public function stars()
+    {
+        return $this->hasMany(Star::class);
+    }
+}
+```
+
+¡Eso es todo! Ahora puedes ejecutar `$star->user` o `$user->stars` para buscar una lista de `Stars` de un `User` o para buscar el `User` que tiene la estrella en un `Star`. Además, cuando creas una nueva `Star`, ahora querrás pasar el `User`:
+
+```php
+$user = User::first();
+$event = Event::first();
+$event->stars()->create(['user_id' => $user->id]);
+```
+
+### Many-to-many polymorphic
