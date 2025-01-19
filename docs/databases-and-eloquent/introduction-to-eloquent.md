@@ -1557,4 +1557,74 @@ $event = Event::first();
 $event->stars()->create(['user_id' => $user->id]);
 ```
 
-### Many-to-many polymorphic
+### Polimórfico de muchos-a-muchos
+
+El más complejo y menos común de los tipos de relación, las relaciones polimórficas de muchos-a-muchos, son como relaciones polimórficas, excepto que en lugar de ser de uno a muchos, son de muchos a muchos.
+
+El ejemplo más común de este tipo de relación es la etiqueta, así que lo dejaré a segura y lo usaré como nuestro ejemplo. Imaginemos que desea poder etiquetar `Contacts` y `Events`. La singularidad del polimorfismo de muchos-a-muchos es que es de muchos a muchos: cada etiqueta se puede aplicar a varios elementos y cada elemento etiquetado puede tener varias etiquetas. Y para agregar a eso, es polimórfico: las etiquetas se pueden relacionar con elementos de varios tipos diferentes. Para la base de datos, comenzaremos con la estructura normal de la relación polimórfica, pero también agregaremos una tabla pivote.
+
+Esto significa que necesitaremos una tabla `contacts`, una tabla `events` y una tabla `tags`, todas con la forma normal, con un ID y las propiedades que desees, _y_ una nueva tabla `taggables`, que tendrá los campos `tag_id`, `taggable_id` y `taggable_type`. Cada entrada en la tabla `taggables` relacionará una etiqueta con uno de los tipos de contenido etiquetables.
+
+Ahora definamos esta relación en nuestros modelos, como se ve en el ejemplo siguiente.
+
+_Definición de una relación polimórfica de muchos-a-muchos_
+```php
+class Contact extends Model
+{
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+```
+```php
+class Event extends Model
+{
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
+    }
+}
+```
+```php
+class Tag extends Model
+{
+    public function contacts()
+    {
+        return $this->morphedByMany(Contact::class, 'taggable');
+    }
+
+    public function events()
+    {
+        return $this->morphedByMany(Event::class, 'taggable');
+    }
+}
+```
+
+Aquí cómo crear su primera etiqueta:
+
+```php
+$tag = Tag::firstOrCreate(['name' => 'likes-cheese']);
+$contact = Contact::first();
+$contact->tags()->attach($tag->id);
+```
+
+Obtenemos los resultados de esta relación de forma normal, como se ve en el ejemplo siguiente.
+
+_Acceder a los elementos relacionados desde ambos lados de una relación polimórfica de muchos-a-muchos_
+```php
+$contact = Contact::first();
+
+$contact->tags->each(function ($tag) {
+// Do stuff
+});
+
+$tag = Tag::first();
+
+$tag->contacts->each(function ($contact) {
+// Do stuff
+});
+```
+
+### Child records updating parent record timestamps
+
