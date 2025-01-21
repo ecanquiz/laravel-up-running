@@ -1626,5 +1626,26 @@ $tag->contacts->each(function ($contact) {
 });
 ```
 
-### Child records updating parent record timestamps
+### Registros secundarios que actualizan marcas de tiempo de registros principales
+
+Recuerde que, de manera predeterminada, todos los modelos de Eloquent tendrán las marcas de tiempo `created_at` y `updated_at`. Eloquent establecerá la marca de tiempo `updated_at` automáticamente cada vez que realice cambios en un registro.
+
+Cuando un elemento relacionado tiene una relación de tipo `belongsTo` o `belongsToMany` con otro elemento, puede resultar útil marcar el otro elemento como actualizado cada vez que se actualice el elemento relacionado. Por ejemplo, si se actualiza un `PhoneNumber`, tal vez el `Contact` al que está conectado también debería marcarse como actualizado.
+
+Podemos lograr esto agregando el nombre del método para esa relación a una propiedad de matriz `$touches` en la clase secundaria, como en el ejemplo siguiente.
+
+_Actualizar un registro principal cada vez que se actualiza el registro secundario_
+```php
+class PhoneNumber extends Model
+{
+    protected $touches = ['contact'];
+
+    public function contact()
+    {
+        return $this->belongsTo(Contact::class);
+    }
+}
+```
+
+### Eager Loading
 
