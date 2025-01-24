@@ -87,7 +87,8 @@ export default defineConfig({
         { text: 'Inspeccionar su Base de Datos', link: '/databases-and-eloquent/inspecting-your-database' },
         { text: 'Siembras', link: '/databases-and-eloquent/seeding' },
         { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },
-        { text: 'Introducción a Eloquent', link: '/databases-and-eloquent/introduction-to-eloquent' }
+        { text: 'Introducción a Eloquent', link: '/databases-and-eloquent/introduction-to-eloquent' },
+        { text: 'Eventos Elocuentes', link: '/databases-and-eloquent/eloquent-events' }
       ]
     }, {
       text: 'Recopilación y Manejo de Datos de Usuario',   // required

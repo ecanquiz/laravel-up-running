@@ -1647,5 +1647,97 @@ class PhoneNumber extends Model
 }
 ```
 
-### Eager Loading
+### Cargar Ansiosamente
 
+De forma predeterminada, Eloquent carga las relaciones mediante la _carga perezosa_. Esto significa que cuando carga por primera vez una instancia de modelo, sus modelos relacionados no se cargarán junto con ella. En cambio, solo se cargarán una vez que acceda a ellos en el modelo; son "perezosos" y no realizan ninguna tarea hasta que se los solicita.
+
+Esto puede convertirse en un problema si estás iterando sobre una lista de instancias de modelo y cada una tiene un elemento (o elementos) relacionado en el que estás trabajando. El problema con la carga diferida es que puede introducir una carga significativa en la base de datos (a menudo el problema N+1, si estás familiarizado con el término; si no, simplemente ignora este comentario entre paréntesis). Por ejemplo, cada vez que se ejecuta el bucle en el ejemplo siguiente, ejecuta una nueva consulta de base de datos para buscar los números de teléfono de ese `Contact`.
+
+_Recuperar un elemento relacionado para cada elemento de una lista (N+1)_
+```php
+$contacts = Contact::all();
+
+foreach ($contacts as $contact) {
+    foreach ($contact->phone_numbers as $phone_number) {
+        echo $phone_number->number;
+    }
+}
+```
+
+Si está cargando una instancia de modelo y sabe que trabajará con sus relaciones, puede optar por _cargar ansiosamente_ uno o varios de sus conjuntos de elementos relacionados:
+
+```php
+$contacts = Contact::with('phoneNumbers')->get();
+```
+
+Al usar el método `with()` con una recuperación se obtienen todos los elementos relacionados con los elementos extraídos; como puede ver en este ejemplo, le pasa el nombre del método por el cual se define la relación.
+
+Cuando usamos la carga ansiosa, en lugar de extraer los elementos relacionados uno a la vez cuando se solicitan (por ejemplo, seleccionar los números de teléfono de un contacto cada vez que se ejecuta un bucle `foreach`), tenemos una única consulta para extraer los elementos iniciales (seleccionando todos los contactos) y una segunda consulta para extraer todos sus elementos relacionados (seleccionando todos los números de teléfono que pertenecen a los contactos que acabamos de extraer).
+
+Puede cargar ansiosamente múltiples relaciones pasando una matriz de las relaciones a cargar ansiosamente a la llamada `with()`:
+
+```php
+$contacts = Contact::with(['phoneNumbers', 'addresses'])->get();
+```
+
+Y puedes anidar la carga ansiosa para cargar ansiosamente las relaciones de las relaciones:
+
+```php
+$authors = Author::with('posts.comments')->get();
+```
+
+#### Restringiendo cargas ansiosas
+
+Si desea cargar ansiosamente una relación pero no todos los elementos, puede pasar una clausura a `with()` para definir exactamente qué elementos relacionados cargar ansiosamente:
+
+```php
+$contacts = Contact::with(['addresses' => function ($query) {
+    $query->where('mailable', true);
+}])->get();
+```
+
+#### Carga perezosa y ansiosa
+
+Sé que suena loco, porque acabamos de definir la carga ansiosa como una especie de lo opuesto a la carga perezosa, pero a veces no sabes que quieres realizar una consulta de carga ansiosa hasta que se hayan extraído las instancias iniciales. En este contexto, aún puedes hacer una sola consulta para buscar todos los elementos relacionados, evitando el costo N+1. A esto lo llamamos _carga perezosa y ansiosa_:
+
+```php
+$contacts = Contact::all();
+
+if ($showPhoneNumbers) {
+    $contacts->load('phoneNumbers');
+}
+```
+
+Para cargar una relación solo cuando aún no se ha cargado, utilice el método `loadMissing()`:
+
+```php
+$contacts = Contact::all();
+
+if ($showPhoneNumbers) {
+    $contacts->loadMissing('phoneNumbers');
+}
+```
+
+#### Prevención de la carga perezosa
+
+Debido a que la carga perezosa puede ser a menudo un patrón indeseable, puedes desactivar la carga perezosa para toda tu aplicación a la vez. Se recomienda que realices esta acción en el método `boot()` de tu `AppServiceProvider`:
+
+```php
+use Illuminate\Database\Eloquent\Model;
+
+public function boot()
+{
+    Model::preventLazyLoading(! $this->app->isProduction());
+}
+```
+
+#### Solo contar la carga ansiosa
+
+Si desea cargar relaciones ansiosas, pero solo para poder tener acceso al conteo de elementos en cada relación, puede probar `withCount()`:
+
+```php
+$authors = Author::withCount('posts')->get();
+
+// Adds a "posts_count" integer to each Author with a count of that
+// author's related posts
+```
