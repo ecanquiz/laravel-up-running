@@ -88,7 +88,8 @@ export default defineConfig({
         { text: 'Siembras', link: '/databases-and-eloquent/seeding' },
         { text: 'Generador de Consultas', link: '/databases-and-eloquent/query-builder' },
         { text: 'Introducción a Eloquent', link: '/databases-and-eloquent/introduction-to-eloquent' },
-        { text: 'Eventos Elocuentes', link: '/databases-and-eloquent/eloquent-events' }
+        { text: 'Eventos Elocuentes', link: '/databases-and-eloquent/eloquent-events' },
+        { text: 'Pruebas y Resumen', link: '/databases-and-eloquent/testing-and-summary' }
       ]
     }, {
       text: 'Recopilación y Manejo de Datos de Usuario',   // required
@@ -150,6 +151,15 @@ export default defineConfig({
         items: [
           { text: 'Fundamentos de APIs JSON Tipo REST', link: '/writing-apis/the-basics-of-rest-like-json-apis' }
         ]
+    }, {      
+      text: 'Colas, Trabajos, Eventos, Radiodifusión y el Programador',   // required
+      path: '/queues-jobs-events-broadcasting-and-the-scheduler/',      // optional, link of the title, which should be an absolute path and must exist
+      sidebarDepth: 1,    // optional, defaults to 1
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Colas', link: '/queues-jobs-events-broadcasting-and-the-scheduler/queques' }
+      ]
     }, {      
       text: 'Ayudantes y Colecciones',   // required
       path: '/helpers-and-collections/',      // optional, link of the title, which should be an absolute path and must exist
