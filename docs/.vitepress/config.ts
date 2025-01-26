@@ -92,6 +92,14 @@ export default defineConfig({
         { text: 'Pruebas y Resumen', link: '/databases-and-eloquent/testing-and-summary' }
       ]
     }, {
+      text: 'Componentes del Frontend',   // required
+      path: '/frontend-components/',
+      collapsible: true,
+      collapsed: true,
+      items: [
+        { text: 'Kits de Inicio de Laravel', link: '/frontend-components/laravel-starter-kits' }
+      ]
+    }, {
       text: 'Recopilación y Manejo de Datos de Usuario',   // required
       path: '/collecting-and-handling-user-data/',
       collapsible: true,
