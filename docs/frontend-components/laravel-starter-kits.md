@@ -20,5 +20,57 @@ Si recién estás comenzando a usar Laravel, Breeze es más fácil de entender y
 
 Jetstream no tiene una opción exclusiva para Blade ni tampoco una opción para React; necesitarás trabajar con algún tipo de framework de frontend. Tu opción es Vue/Inertia o Livewire, que es un proyecto que te permite escribir principalmente código de backend pero obtener interactividad de frontend en tus aplicaciones Laravel. Sin embargo, Jetstream es más robusto, así que si te sientes cómodo con Laravel y Livewire o Inertia, y tu proyecto necesita esas características adicionales, Jetstream puede ser tu mejor opción.
 
-## Laravel Breeze
+## Breeze de Laravel
+
+Laravel Breeze es un kit de inicio simple que proporciona todo lo que necesita para una aplicación Laravel promedio para permitir que sus usuarios se registren, inicien sesión y administren sus perfiles.
+
+### Instalación de Breeze
+
+Breeze está pensado para instalarse en aplicaciones nuevas, por lo que suele ser lo primero que instalarás cuando inicies una nueva aplicación:
+
+```sh
+laravel new myProject
+cd myProject
+composer require laravel/breeze --dev
+```
+
+Una vez que Breeze se agregue a su proyecto, ejecutará su instalador:
+
+```sh
+php artisan breeze:install
+```
+
+Una vez que ejecute el instalador, se le solicitará que elija una pila: Blade, Inertia con React, Inertia con Vue o API, que está diseñada para impulsar una interfaz que no sea de Inertia, como Next.js. Estas pilas se explican en la siguiente sección.
+
+Después de instalar Breeze, asegúrese de ejecutar sus migraciones y crear su interfaz:
+
+```sh
+php artisan migrate
+npm install
+npm run dev
+```
+
+### Lo que viene con Breeze
+
+Breeze registra automáticamente las rutas para las páginas de registro, inicio de sesión, cierre de sesión, restablecimiento de contraseña, verificación de correo electrónico y confirmación de contraseña. Estas rutas se almacenan en un nuevo archivo `routes/auth.php`.
+
+La forma sin API de Breeze también registra rutas para un panel y una página de “editar perfil” para los usuarios, y agrega estas rutas directamente al archivo `routes/web.php`.
+
+La forma sin API de Breeze también publica controladores para la página de “editar perfil”, verificación de correo electrónico, restablecimiento de contraseñas y varias otras funciones relacionadas con la autenticación.
+
+Además, agrega Tailwind, Alpine.js y PostCSS (para Tailwind). Más allá de estos archivos y dependencias compartidas, cada pila agrega los suyos propios, exclusivos para sus necesidades:
+
+- Breeze Blade
+
+Breeze Blade incluye una serie de plantillas Blade para todas las funciones mencionadas anteriormente, que puede encontrar en `resources/views/auth`, `resources/view/components`, `resources/views/profile` y algunas otras por ahí.
+
+- Breeze Inertia
+
+Ambas pilas de Inertia incorporan Inertia, Ziggy (una herramienta para generar URLs a rutas de Laravel en JavaScript), el componente “forms” de Tailwind y los paquetes de JavaScript necesarios para que sus respectivos frameworks frontend funcionen. Ambas también publican una plantilla Blade básica que carga Inertia y una serie de componentes React/Vue para todas las páginas publicadas en el directorio `resources/js`.
+
+- API de Breeze
+
+La pila de API para Breeze instala significativamente menos código y menos paquetes que las otras pilas, pero también elimina los archivos de arranque existentes que vienen con todas las nuevas aplicaciones de Laravel. La pila de API está pensada para preparar una aplicación para que sea _solo_ un backend de API para una aplicación Next.js independiente, por lo que elimina `package.json`, todos los archivos JavaScript y CSS y todas las plantillas de frontend.
+
+## Laravel Jetstream
 
