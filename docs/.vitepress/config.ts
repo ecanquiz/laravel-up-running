@@ -97,7 +97,8 @@ export default defineConfig({
       collapsible: true,
       collapsed: true,
       items: [
-        { text: 'Kits de Inicio de Laravel', link: '/frontend-components/laravel-starter-kits' }
+        { text: 'Kits de Inicio de Laravel', link: '/frontend-components/laravel-starter-kits' },
+        { text: 'Configuración de Laravel Vite', link: '/frontend-components/laravel-vite-configuration' }        
       ]
     }, {
       text: 'Recopilación y Manejo de Datos de Usuario',   // required

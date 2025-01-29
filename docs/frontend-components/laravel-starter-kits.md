@@ -72,5 +72,91 @@ Ambas pilas de Inertia incorporan Inertia, Ziggy (una herramienta para generar U
 
 La pila de API para Breeze instala significativamente menos código y menos paquetes que las otras pilas, pero también elimina los archivos de arranque existentes que vienen con todas las nuevas aplicaciones de Laravel. La pila de API está pensada para preparar una aplicación para que sea _solo_ un backend de API para una aplicación Next.js independiente, por lo que elimina `package.json`, todos los archivos JavaScript y CSS y todas las plantillas de frontend.
 
-## Laravel Jetstream
+## Jetstream de Laravel
 
+Jetstream se basa en la funcionalidad de Breeze y agrega aún más herramientas para iniciar una nueva aplicación; sin embargo, es una configuración más complicada con menos opciones de configuración, por lo que querrá saber que lo necesita antes de elegir Jetstream en lugar de Breeze.
+
+Jetstream, al igual que Breeze, publica rutas, controladores, vistas y archivos de configuración. Al igual que Breeze, Jetstream utiliza Tailwind y viene en diferentes “pilas” tecnológicas.
+
+Sin embargo, a diferencia de Breeze, Jetstream requiere interactividad, por lo que no existe una pila exclusiva de Blade. En cambio, tienes dos opciones: Livewire (que es Blade con algo de interactividad de JavaScript impulsada por PHP) o Inertia/Vue (no existe un formulario React para Jetstream).
+
+Jetstream también amplía la oferta de Breeze al incorporar funciones de gestión de equipos, autenticación de dos factores, gestión de sesiones y gestión de tokens API personales.
+
+### Instalación de Jetstream
+
+Jetstream está diseñado para instalarse en una nueva aplicación de Laravel y puedes instalarlo con Composer:
+
+```sh
+laravel new myProject
+cd myProject
+composer require laravel/jetstream
+```
+
+Una vez que Jetstream se haya agregado a su proyecto, deberá ejecutar su instalador. A diferencia de Breeze, no se le solicitará que elija su pila; en su lugar, deberá pasar la pila (livewire o inercia) como primer parámetro.
+
+```sh
+php artisan jetstream:install livewire
+```
+
+Si desea agregar administración de equipo a su instalación de Jetstream, pase el indicador `--teams` al paso de instalación:
+
+```sh
+php artisan jetstream:install livewire --teams
+```
+
+Una vez que haya instalado Jetstream, asegúrese de ejecutar sus migraciones y construir su frontend:
+
+```sh
+php artisan migrate
+npm install
+npm run dev
+```
+
+### Lo que viene con Jetstream
+
+Jetstream publica una increíble cantidad de código; aquí hay un resumen rápido:
+
+- Se agregó la autenticación de dos factores y la funcionalidad de foto de perfil al modelo `User` (y se agregaron/modificaron las migraciones requeridas)
+- Un _dashboard_ para usuarios que han iniciado sesión
+- Tailwind, Tailwind forms, Tailwind typography
+- Laravel Fortify, el componente de autenticación de backend sobre el que se basa Jetstream
+- "Acciones" para Fortify y Jetstream en `app/Actions`
+- Texto de Markdown para páginas de términos y políticas en `resources/markdown`
+- Un conjunto enorme de pruebas
+
+:::info Fortify
+Fortify es un sistema de autenticación sin interfaz gráfica. Proporciona las rutas y los controladores para todas las funciones de autenticación que requiere Laravel, desde el inicio de sesión y el registro hasta el restablecimiento de contraseñas y más, para que las utilice cualquier interfaz que elija.
+
+Jetstream se basa en Fortify, por lo que puede pensar en Jetstream como una de las muchas interfaces posibles antes de Fortify. Jetstream también agrega funcionalidad de backend, por lo que demuestra cuán sólido puede ser un sistema de autenticación respaldado por Fortify.
+:::
+
+Las configuraciones Livewire e Inertia de Jetstream vienen con dependencias y ubicaciones ligeramente diferentes para las plantillas:
+
+#### Livewire de Jetstream
+
+La plantilla Livewire de Jetstream prepara su aplicación para funcionar con Livewire y Alpine, y publica componentes Livewire para la interfaz. Proporciona:
+
+- Livewire
+- Alpine.js
+- Componentes Livewire en `app/View/Components`
+- Plantillas de interfaz en `resources/views`
+
+#### Inertia de Jetstream
+
+La plantilla Inertia de Jetstream prepara su aplicación para trabajar con Inertia y Vue, y publica componentes Vue para la interfaz. Proporciona:
+
+- Inertia
+- Vue
+- Plantillas Vue en `resources/js`
+
+#### Personalizando su instalación jetstream
+
+Jetstream se basa en Fortify, por lo que personalizar Jetstream a veces implicará personalizar Fortify. Puede actualizar cualquier configuración en `config/fortify.php`, `config/jetstream.php`, `FortifyServiceProvider` y `JetstreamServiceProvider`.
+
+Mientras que Breeze publica controladores para que usted modifique sus comportamientos, Jetstream publica acciones, cada una de ellas un fragmento único de comportamiento con nombres como `ResetUserPassword.php` y `DeleteUser.php`.
+
+#### Más funciones de Jetstream
+
+Jetstream permite que su aplicación administre equipos, tokens API personales, autenticación de dos factores y realice un seguimiento y desconecte todas las sesiones activas. También puede incorporar algunas de las funciones de interfaz de usuario de Jetstream en su propio código, como banners Flash personalizados.
+
+Para obtener más información sobre cómo funciona todo esto, consulte la [documentación de Laravel para Jetstream](https://jetstream.laravel.com/introduction.html), que es exhaustiva.
