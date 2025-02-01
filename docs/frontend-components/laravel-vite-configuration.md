@@ -7,19 +7,54 @@ Laravel ofrece un complemento NPM y una directiva Blade para facilitar el trabaj
 Eche un vistazo al ejemplo siguiente para ver cómo se ve el contenido del archivo `vite.config.js` predeterminado.
 
 _El predeterminado `vite.config.js`_
-```js
+```ts
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
-    plugins: [
-        laravel({
-            input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
-        }),
-    ],
+  plugins: [
+    laravel({
+      input: ['resources/css/app.css', 'resources/js/app.js'],
+      refresh: true,
+    }),
+  ],
 });
 ```
 
-We’re defining the files our plug-in should build from (input) and saying we do want
-the “refresh my page every time I save a view file” feature enabled (refresh).
+Estamos definiendo los archivos desde los cuales nuestro complemento debe construirse (`input`) y diciendo que queremos que la función “actualizar mi página cada vez que guardo un archivo de vista” esté habilitada (`refresh`).
+
+De forma predeterminada, Vite extrae datos de los dos archivos enumerados en el ejemplo anterior y se actualizará automáticamente cada vez que se produzca un cambio en algún archivo de estas carpetas:
+
+- `app/View/Components/`
+- `lang/`
+- `resources/lang/`
+- `resources/views/`
+- `routes/`
+
+Ahora que tenemos nuestra configuración de Vite apuntando a nuestros archivos de entrada CSS y JavaScript, querremos hacer referencia a esos archivos usando la directiva Blade `@vite`, como puede ver en el ejemplo siguiente.
+
+_Uso de la directiva `@vite` de Blade_
+```html
+<html>
+  <head>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+```
+
+¡Eso es todo! A continuación, veamos cómo agrupar archivos con Vite.
+
+:::info
+Si su dominio de desarrollo local es seguro (HTTPS), deberá modificar su archivo `vite.config.js` para que apunte a sus credenciales. Si está usando Valet, hay una opción de configuración especial para eso:
+```ts
+// ...
+export default defineConfig({
+  plugins: [
+    laravel({
+        // ...
+        valetTls: 'name-of_my-app-here.test',
+    }),
+  ],
+});
+```
+:::
+
+## Bundling Files with Vite
