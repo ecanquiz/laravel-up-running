@@ -57,4 +57,14 @@ export default defineConfig({
 ```
 :::
 
-## Bundling Files with Vite
+## Agrupación de Archivos con Vite
+
+Finalmente, es hora de agrupar nuestros recursos. Hay dos maneras de agruparlos con Vite: "build" y "dev".
+
+Si desea compilar sus archivos una vez, ya sea para entregarlos a producción o para realizar pruebas locales, ejecute `npm run build` y Vite agrupará sus recursos. Sin embargo, si desarrolla localmente, puede que prefiera que Vite inicie un proceso que supervise sus archivos de vista para detectar cambios, reactive la compilación cada vez que detecte cambios y actualice la página en su navegador. Esto es lo que `npm run dev` hace por usted.
+
+Los archivos compilados terminarán en la carpeta `public/build/assets` de su aplicación, con un archivo ubicado en `public/build/manifest.json` que le indica a Laravel y Vite cómo llegar a cada archivo compilado desde su referencia de ruta no compilada.
+
+:::info
+La carpeta `public/build` se ignora de forma predeterminada en `.gitignore` de Laravel, así que asegúrese de ejecutar `npm run build` como parte de su proceso de implementación.
+:::
