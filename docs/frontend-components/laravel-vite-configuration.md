@@ -68,3 +68,37 @@ Los archivos compilados terminarán en la carpeta `public/build/assets` de su ap
 :::info
 La carpeta `public/build` se ignora de forma predeterminada en `.gitignore` de Laravel, así que asegúrese de ejecutar `npm run build` como parte de su proceso de implementación.
 :::
+
+## El Servidor Dev de Vite
+
+Al ejecutar `npm run dev`, se crea un servidor HTTP real, impulsado por Vite. El asistente Vite Blade reescribe las URL de los recursos para que apunten a las mismas ubicaciones en el servidor de desarrollo, en lugar de a su dominio local. Esto permite a Vite actualizar y actualizar sus dependencias con mayor rapidez.
+
+Esto significa que si escribes la siguiente llamada Blade:
+
+```php
+@vite(['resources/css/app.css', 'resources/js/app.js'])
+```
+
+Se verá así en su aplicación de producción:
+
+```html
+<link rel="preload" as="style"
+    href="http://my-app.test/build/assets/app-1c09da7e.css" />
+<link rel="modulepreload"
+    href="http://my-app.test/build/assets/app-ea0e9592.js" />
+<link rel="stylesheet"
+    href="http://my-app.test/build/assets/app-1c09da7e.css" />
+<script type="module"
+    src="http://my-app.test/build/assets/app-ea0e9592.js">
+</script>
+```
+
+Pero se verá algo así localmente si su servidor Vite está ejecutándose:
+
+```html
+<script type="module" src="http://127.0.0.1:5173/@vite/client"></script>
+<link rel="stylesheet" href="http://127.0.0.1:5173/resources/css/app.css" />
+<script type="module" src="http://127.0.0.1:5173/resources/js/app.js"></script>
+```
+
+## Working with Static Assets and Vite
