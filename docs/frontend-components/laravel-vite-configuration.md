@@ -101,4 +101,38 @@ Pero se verá algo así localmente si su servidor Vite está ejecutándose:
 <script type="module" src="http://127.0.0.1:5173/resources/js/app.js"></script>
 ```
 
-## Working with Static Assets and Vite
+## Trabajar con Activos Estáticos y Vite
+
+Hasta ahora solo hemos visto cómo cargar JavaScript y CSS con Vite. Sin embargo, la configuración de Vite de Laravel también puede procesar y versionar tus recursos estáticos (como imágenes).
+
+Si trabaja con plantillas de JavaScript, Vite capturará los enlaces a cualquier recurso estático _relativo_, los procesará y versionará. Vite ignorará cualquier recurso estático _absoluto_.
+
+Esto significa que las siguientes imágenes recibirán un tratamiento diferente si están en plantillas de JavaScript.
+
+```html
+<!-- Ignored by Vite -->
+<img src="/resources/images/soccer.jpg">
+<!-- Processed by Vite -->
+<img src="../resources/images/soccer.jpg">
+```
+
+Si trabaja con plantillas Blade, deberá seguir dos pasos para que Vite gestione sus activos estáticos. Primero, deberá usar la llamada de fachada `Vite::asset` para vincular su activo:
+
+```html
+<img src="{{ Vite::asset('resources/images/soccer.jpg') }}">
+```
+
+En segundo lugar, deberá agregar un paso de configuración a su archivo `resources/js/app.js` que muestre a Vite qué archivos o carpetas importar:
+
+```js
+import.meta.glob([
+  // Imports all the files in /resources/images/
+  '../images/**',
+]);
+```
+
+:::info
+Si ejecuta el servidor Vite con `npm run dev`, el servidor puede cargar sus recursos estáticos _sin_ que usted agregue la configuración `import.meta.glob`. Esto significa que podría pensar que se mostrará, pero fallará en su compilación de producción.
+:::
+
+## Working with JavaScript Frameworks and Vite
