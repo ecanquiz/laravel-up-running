@@ -1,6 +1,6 @@
 # Configuración de Laravel Vite
 
-Vite es un entorno de desarrollo frontend local que combina un servidor de desarrollo y una cadena de herramientas de compilación basada en Rollup. Puede parecer mucho, pero en Laravel, se usa principalmente para agrupar activos CSS y JavaScript.
+[Vite](https://vite.dev/) es un entorno de desarrollo frontend local que combina un servidor de desarrollo y una cadena de herramientas de compilación basada en Rollup. Puede parecer mucho, pero en Laravel, se usa principalmente para agrupar activos CSS y JavaScript.
 
 Laravel ofrece un complemento NPM y una directiva Blade para facilitar el trabajo con Vite. Ambos están incluidos en las aplicaciones de Laravel junto con un archivo de configuración: `vite.config.js`.
 
@@ -135,4 +135,102 @@ import.meta.glob([
 Si ejecuta el servidor Vite con `npm run dev`, el servidor puede cargar sus recursos estáticos _sin_ que usted agregue la configuración `import.meta.glob`. Esto significa que podría pensar que se mostrará, pero fallará en su compilación de producción.
 :::
 
-## Working with JavaScript Frameworks and Vite
+## Trabajar con Frameworks de JavaScript y Vite
+
+>Si desea trabajar con [Vue](https://vuejs.org/), [React](https://react.dev/), [Inertia](https://inertiajs.com/) o una [aplicación de página única (SPA)](https://en.wikipedia.org/wiki/Single-page_application), es posible que necesite instalar complementos específicos o configurar elementos específicos. A continuación, se detallan los requisitos básicos para los escenarios más comunes.
+
+### Vite y Vue
+
+Para trabajar con Vite y Vue, primero instale el complemento Vue de Vite:
+
+```sh
+npm install --save-dev @vitejs/plugin-vue
+```
+
+Luego, debe modificar su archivo `vite.config.js` para llamar al complemento de Vue, pasándole dos opciones de configuración. La primera, `template.transformAssetUrls.base=null`, permite que el complemento de Laravel, en lugar del complemento de Vue, gestione la reescritura de URL. La segunda, `template.transformAssetUrls.includeAbsolute=false`, permite que las URL dentro de las plantillas de Vue hagan referencia a archivos en el directorio público:
+
+```js
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import vue from '@vitejs/plugin-vue';
+
+export default defineConfig({
+  plugins: [
+    laravel(['resources/js/app.js']),
+    vue({
+      template: {
+        transformAssetUrls: {
+          base: null,
+          includeAbsolute: false,
+        },
+      },
+    }),
+  ],
+});
+```
+
+### Vite y React
+
+Para trabajar con Vite y React, primero instale el complemento React de Vite:
+
+```sh
+npm install --save-dev @vitejs/plugin-react
+```
+
+Luego debes modificar tu archivo `vite.config.js` para llamar al complemento React:
+
+```js
+import { defineConfig } from 'vite';
+import laravel from 'laravel-vite-plugin';
+import react from '@vitejs/plugin-react';
+
+export default defineConfig({
+  plugins: [
+    laravel(['resources/js/app.js']),
+    react(),
+  ],
+});
+```
+
+Por último, agregue la directiva Blade `@viteReactRefresh` en su plantilla antes de importar sus archivos JavaScript con `@vite`:
+
+```php
+@viteReactRefresh
+@vite('resources/js/app.jsx')
+```
+
+### Vite e Inercia
+
+Si configuras Inertia tú mismo, lo necesitarás para resolver los componentes de tu página.
+
+Aquí tienes un ejemplo del código que probablemente escribirás en el archivo `resources/js/app.js`, pero la mejor opción es instalar Inertia con Breeze, Jetstream o la documentación de Inertia.
+
+```js
+import { createApp, h } from 'vue'
+import { createInertiaApp } from '@inertiajs/vue3'
+
+createInertiaApp({
+  resolve: name => {
+    const pages = import.meta.glob('./Pages/**/*.vue', { eager: true })
+    return pages[`./Pages/${name}.vue`]
+  },
+  setup({ el, App, props, plugin }) {
+    createApp({ render: () => h(App, props) })
+      .use(plugin)
+      .mount(el)
+  },
+})
+```
+
+### Vite y SPAs
+
+Si estás creando una SPA, elimina `resources/css/app.css` de tu archivo `vite.config.js`, lo que lo elimina como punto de entrada.
+
+En su lugar, importa tu CSS a tu JavaScript añadiendo esta línea a tu archivo `resources/js/app.js`, justo debajo de importar el bootstrap:
+
+```js
+import './bootstrap';
+import '../css/app.css';
+```
+
+## Using Environment Variables in Vite
